@@ -2,114 +2,213 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <title>SIH26047 - Clinical Case-Taking Kiosk</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>SIH26047 - Digital Clinical Intake Platform</title>
   <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    @keyframes bounceWave {
+      0%, 100% { height: 6px; }
+      50% { height: 26px; }
+    }
+    .wave-bar {
+      width: 4px;
+      background-color: #ef4444;
+      border-radius: 9999px;
+      animation: bounceWave 1s ease-in-out infinite;
+    }
+    .wave-bar:nth-child(2) { animation-delay: 0.15s; }
+    .wave-bar:nth-child(3) { animation-delay: 0.3s; }
+    .wave-bar:nth-child(4) { animation-delay: 0.45s; }
+    .wave-bar:nth-child(5) { animation-delay: 0.2s; }
+  </style>
 </head>
-<body class="bg-slate-100 text-slate-800 antialiased p-6">
+<body class="bg-slate-100 text-slate-800 antialiased p-4 md:p-6 min-h-screen">
 
   <div class="max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-2 gap-6">
 
+    <!-- LEFT PANEL: PATIENT INTAKE KIOSK -->
     <div class="bg-white rounded-2xl shadow-md border border-slate-200 p-6 flex flex-col justify-between">
       <div>
         <div class="flex items-center justify-between pb-4 border-b border-slate-100">
-          <span class="text-xs font-bold uppercase tracking-wider text-blue-600 bg-blue-50 px-3 py-1 rounded-full">
+          <span class="text-xs font-bold uppercase tracking-wider text-blue-600 bg-blue-50 px-3 py-1 rounded-full flex items-center gap-1.5">
+            <span class="w-2 h-2 rounded-full bg-blue-600 animate-ping"></span>
             Patient Kiosk (OPD Lobby)
           </span>
-          <span class="text-xs text-slate-400">Language: <b>Hindi / English</b></span>
+          <button onclick="scanMockABHA()" class="text-xs font-semibold bg-emerald-50 text-emerald-700 hover:bg-emerald-100 border border-emerald-200 px-3 py-1 rounded-lg transition-colors flex items-center gap-1.5">
+            <span>📷</span> Scan ABHA QR
+          </button>
         </div>
 
-        <h2 class="text-xl font-bold mt-4 text-slate-900">अपनी समस्या बताएं (Voice Clinical Intake)</h2>
-        <p class="text-sm text-slate-500 mb-6">Press the mic button and speak in Hindi or English.</p>
-
-        <div class="mb-4">
-          <label class="block text-xs font-semibold text-slate-400 uppercase mb-2">Or Tap Area of Pain:</label>
-          <div class="grid grid-cols-3 gap-2">
-            <button onclick="appendSymptom('Chaati me dard aur ghabrahat (Chest Pain)')" class="p-2 border rounded-lg hover:bg-slate-50 text-xs font-medium">🫀 Chest</button>
-            <button onclick="appendSymptom('Pet me jalan aur gas (Stomach Acid)')" class="p-2 border rounded-lg hover:bg-slate-50 text-xs font-medium">🫁 Abdomen</button>
-            <button onclick="appendSymptom('Ghutno me dard aur sujan (Joint Pain)')" class="p-2 border rounded-lg hover:bg-slate-50 text-xs font-medium">🦵 Knees/Joints</button>
+        <!-- Verified Patient Tag -->
+        <div id="patientProfileTag" class="hidden mt-3 p-2.5 bg-emerald-50/60 border border-emerald-200 rounded-xl flex items-center justify-between text-xs">
+          <div>
+            <span class="text-slate-400">Patient:</span> <b id="kioskPatName" class="text-slate-800">Ramesh Sharma</b> (52, M)
+          </div>
+          <div class="text-emerald-700 font-mono font-semibold" id="kioskAbhaId">
+            ABHA: 91-8273-1920-44
           </div>
         </div>
 
-        <div class="mt-4">
-          <label class="block text-xs font-semibold text-slate-400 uppercase mb-1">Live Audio Transcript:</label>
-          <textarea id="transcript" rows="4" class="w-full border rounded-xl p-3 text-sm focus:ring-2 focus:ring-blue-500 outline-none" placeholder="Click 'Start Voice' or type your symptoms here..."></textarea>
+        <h2 class="text-xl font-bold mt-4 text-slate-900">अपनी समस्या बताएं (Voice Clinical Intake)</h2>
+        <p class="text-xs text-slate-500 mb-4">Press the mic button and speak in Hindi or English, or tap your symptoms below.</p>
+
+        <!-- Quick Tap Symptom Cards -->
+        <div class="mb-4">
+          <label class="block text-[11px] font-semibold text-slate-400 uppercase tracking-wider mb-2">Select Primary Region:</label>
+          <div class="grid grid-cols-3 gap-2">
+            <button onclick="appendSymptom('Chaati me tez dard aur paseena (Severe Chest Pain)')" class="p-2.5 border border-slate-200 rounded-xl hover:bg-slate-50 text-xs font-semibold text-slate-700 transition-colors text-left flex items-center gap-2">
+              <span class="text-base">🫀</span> Chest
+            </button>
+            <button onclick="appendSymptom('Pet me jalan aur gas (Stomach Acid/Indigestion)')" class="p-2.5 border border-slate-200 rounded-xl hover:bg-slate-50 text-xs font-semibold text-slate-700 transition-colors text-left flex items-center gap-2">
+              <span class="text-base">🫁</span> Abdomen
+            </button>
+            <button onclick="appendSymptom('Ghutno me dard aur sujan (Joint Pain/Swelling)')" class="p-2.5 border border-slate-200 rounded-xl hover:bg-slate-50 text-xs font-semibold text-slate-700 transition-colors text-left flex items-center gap-2">
+              <span class="text-base">🦵</span> Joints
+            </button>
+          </div>
+        </div>
+
+        <!-- Audio Waveform Indicator -->
+        <div id="waveBox" class="hidden flex items-center justify-center gap-1.5 h-8 bg-red-50 border border-red-200 rounded-xl mb-3">
+          <div class="wave-bar"></div>
+          <div class="wave-bar"></div>
+          <div class="wave-bar"></div>
+          <div class="wave-bar"></div>
+          <div class="wave-bar"></div>
+          <span class="text-xs font-bold text-red-600 ml-2">Recording Voice (Listening Hindi/English)...</span>
+        </div>
+
+        <!-- Transcript Input -->
+        <div>
+          <label class="block text-[11px] font-semibold text-slate-400 uppercase tracking-wider mb-1">Live Audio Transcript:</label>
+          <textarea id="transcript" rows="4" class="w-full border border-slate-200 rounded-xl p-3 text-sm focus:ring-2 focus:ring-blue-500 outline-none" placeholder="Tap 'Start Voice Intake' or click the symptom tags above..."></textarea>
         </div>
       </div>
 
       <div class="mt-6 flex gap-3">
-        <button id="micBtn" onclick="toggleSpeech()" class="flex-1 bg-blue-600 hover:bg-blue-700 text-white font-medium py-3 rounded-xl flex items-center justify-center gap-2">
+        <button id="micBtn" onclick="toggleSpeech()" class="flex-1 bg-blue-600 hover:bg-blue-700 text-white font-medium py-3 rounded-xl flex items-center justify-center gap-2 shadow-sm transition-all">
           <span id="micIcon">🎙️</span> <span id="micText">Start Voice Intake</span>
         </button>
-        <button onclick="sendToDoctor()" class="flex-1 bg-emerald-600 hover:bg-emerald-700 text-white font-medium py-3 rounded-xl">
-          Submit to Doctor ➔
+        <button onclick="sendToDoctor()" class="flex-1 bg-emerald-600 hover:bg-emerald-700 text-white font-medium py-3 rounded-xl shadow-sm transition-all flex items-center justify-center gap-2">
+          <span>Submit to Doctor</span> ➔
         </button>
       </div>
     </div>
 
-    <div class="bg-white rounded-2xl shadow-md border border-slate-200 p-6">
-      <div class="flex items-center justify-between pb-4 border-b border-slate-100">
-        <span class="text-xs font-bold uppercase tracking-wider text-purple-600 bg-purple-50 px-3 py-1 rounded-full">
-          Doctor's OPD Cockpit
-        </span>
-        <span id="triageBadge" class="hidden text-xs font-bold uppercase px-3 py-1 rounded-full bg-red-100 text-red-700">
-          🚨 Triage Alert: Emergency
-        </span>
-      </div>
-
-      <div id="emptyState" class="py-24 text-center text-slate-400">
-        <p class="text-3xl mb-2">📋</p>
-        <p class="text-sm">Awaiting patient submission from the lobby kiosk...</p>
-      </div>
-
-      <div id="doctorContent" class="hidden mt-4 space-y-4">
-        <div class="p-3 bg-slate-50 rounded-xl flex justify-between items-center text-xs">
-          <div><b>Patient:</b> Ramesh Sharma (Male, 52)</div>
-          <div><b>ABHA ID:</b> 91-8273-1920-44</div>
+    <!-- RIGHT PANEL: DOCTOR'S COCKPIT -->
+    <div class="bg-white rounded-2xl shadow-md border border-slate-200 p-6 flex flex-col justify-between">
+      <div>
+        <div class="flex items-center justify-between pb-4 border-b border-slate-100">
+          <span class="text-xs font-bold uppercase tracking-wider text-purple-600 bg-purple-50 px-3 py-1 rounded-full">
+            Doctor's OPD Cockpit
+          </span>
+          <span id="triageBadge" class="hidden text-xs font-bold uppercase px-3 py-1 rounded-full bg-red-100 text-red-700 border border-red-200 animate-pulse">
+            🚨 Triage Alert: Emergency
+          </span>
         </div>
 
-        <div class="border rounded-xl p-4 bg-white">
-          <h3 class="text-sm font-bold text-slate-800 border-b pb-2 mb-2 flex items-center gap-2">
-            🩺 Structured Allopathic History (SOCRATES)
-          </h3>
-          <div class="grid grid-cols-2 gap-y-2 text-xs">
-            <div><span class="text-slate-400">Site:</span> <b id="socSite">-</b></div>
-            <div><span class="text-slate-400">Onset:</span> <b id="socOnset">-</b></div>
-            <div><span class="text-slate-400">Character:</span> <b id="socChar">-</b></div>
-            <div><span class="text-slate-400">Radiation:</span> <b id="socRad">-</b></div>
-            <div class="col-span-2"><span class="text-slate-400">Associated:</span> <b id="socAssoc">-</b></div>
+        <!-- Empty State Placeholder -->
+        <div id="emptyState" class="py-24 text-center text-slate-400">
+          <p class="text-4xl mb-3">📋</p>
+          <p class="text-sm font-medium">Awaiting patient submission from the lobby kiosk...</p>
+          <p class="text-xs mt-1 text-slate-400">Speak or select a symptom on the left to generate the case sheet.</p>
+        </div>
+
+        <!-- Structured Clinical Record -->
+        <div id="doctorContent" class="hidden mt-4 space-y-4">
+          
+          <!-- Identity Summary -->
+          <div class="p-3 bg-slate-50 border border-slate-200 rounded-xl flex justify-between items-center text-xs">
+            <div><b>Patient:</b> <span id="docPatName">Ramesh Sharma</span> (52, Male)</div>
+            <div class="font-mono text-slate-600"><b>ABHA:</b> <span id="docAbhaId">91-8273-1920-44</span></div>
+          </div>
+
+          <!-- Allopathic SOCRATES Card -->
+          <div class="border border-slate-200 rounded-xl p-4 bg-white shadow-sm">
+            <h3 class="text-xs font-bold text-slate-800 uppercase tracking-wider border-b pb-2 mb-3 flex items-center gap-2">
+              🩺 Structured Allopathic History (SOCRATES)
+            </h3>
+            <div class="grid grid-cols-2 gap-y-2 text-xs">
+              <div><span class="text-slate-400">Site:</span> <b id="socSite" class="text-slate-800">-</b></div>
+              <div><span class="text-slate-400">Onset:</span> <b id="socOnset" class="text-slate-800">-</b></div>
+              <div><span class="text-slate-400">Character:</span> <b id="socChar" class="text-slate-800">-</b></div>
+              <div><span class="text-slate-400">Radiation:</span> <b id="socRad" class="text-slate-800">-</b></div>
+              <div class="col-span-2"><span class="text-slate-400">Associated Signs:</span> <b id="socAssoc" class="text-slate-800">-</b></div>
+            </div>
+          </div>
+
+          <!-- AYUSH Pariksha Card -->
+          <div class="border border-amber-200 rounded-xl p-4 bg-amber-50/40 shadow-sm">
+            <h3 class="text-xs font-bold text-amber-900 uppercase tracking-wider border-b border-amber-200 pb-2 mb-3 flex items-center gap-2">
+              🌿 AYUSH Pariksha Baseline
+            </h3>
+            <div class="grid grid-cols-2 gap-y-2 text-xs text-amber-950">
+              <div><span class="text-amber-700">Dosha Aggravation:</span> <b id="ayushDosha">-</b></div>
+              <div><span class="text-amber-700">Agni (Digestion):</span> <b id="ayushAgni">-</b></div>
+              <div><span class="text-amber-700">Koshtha (Bowel):</span> <b id="ayushKoshtha">-</b></div>
+              <div><span class="text-amber-700">Ahara-Vihara:</span> <b id="ayushAhara">-</b></div>
+            </div>
+          </div>
+
+          <!-- ABDM FHIR R4 Bundle Payload Toggle -->
+          <div>
+            <details class="text-xs">
+              <summary class="font-semibold text-slate-500 hover:text-slate-800 cursor-pointer transition-colors">
+                View Generated ABDM FHIR R4 JSON Payload
+              </summary>
+              <pre id="fhirPayload" class="mt-2 p-3 bg-slate-900 text-emerald-400 rounded-xl overflow-x-auto text-[11px] h-32"></pre>
+            </details>
           </div>
         </div>
+      </div>
 
-        <div class="border border-amber-200 rounded-xl p-4 bg-amber-50/40">
-          <h3 class="text-sm font-bold text-amber-900 border-b border-amber-200 pb-2 mb-2 flex items-center gap-2">
-            🌿 AYUSH Pariksha Baseline
-          </h3>
-          <div class="grid grid-cols-2 gap-y-2 text-xs text-amber-950">
-            <div><span class="text-amber-700">Dosha Imbalance:</span> <b id="ayushDosha">-</b></div>
-            <div><span class="text-amber-700">Agni (Digestion):</span> <b id="ayushAgni">-</b></div>
-            <div><span class="text-amber-700">Koshtha (Bowel):</span> <b id="ayushKoshtha">-</b></div>
-            <div><span class="text-amber-700">Ahara Pattern:</span> <b id="ayushAhara">-</b></div>
-          </div>
-        </div>
-
-        <div>
-          <details class="text-xs">
-            <summary class="font-semibold text-slate-500 cursor-pointer hover:underline">View ABDM FHIR R4 JSON Payload</summary>
-            <pre id="fhirPayload" class="mt-2 p-3 bg-slate-900 text-emerald-400 rounded-xl overflow-x-auto text-[11px] h-32"></pre>
-          </details>
-        </div>
-
-        <button onclick="alert('Signed & Pushed to National Health Information Exchange (ABDM)!')" class="w-full bg-slate-900 hover:bg-black text-white text-xs font-semibold py-3 rounded-xl">
-          Approve & Commit to ABDM Health Record
+      <!-- Action Button -->
+      <div id="doctorActionBox" class="hidden mt-4">
+        <button onclick="commitToABDM()" class="w-full bg-slate-900 hover:bg-black text-white text-xs font-semibold py-3 rounded-xl shadow transition-all flex items-center justify-center gap-2">
+          <span>✓</span> Approve & Commit to ABDM Health Record
         </button>
       </div>
     </div>
 
   </div>
 
+  <!-- CONFIRMATION MODAL -->
+  <div id="abdmModal" class="hidden fixed inset-0 bg-slate-900/60 backdrop-blur-sm flex items-center justify-center p-4 z-50">
+    <div class="bg-white max-w-md w-full rounded-2xl p-6 shadow-2xl border border-slate-200 text-center animate-in fade-in zoom-in duration-200">
+      <div class="w-12 h-12 bg-emerald-100 text-emerald-600 rounded-full flex items-center justify-center mx-auto text-2xl mb-3">
+        ✓
+      </div>
+      <h3 class="text-lg font-bold text-slate-900">Signed to ABDM Registry</h3>
+      <p class="text-xs text-slate-500 mt-1">Structured clinical encounter successfully converted to FHIR R4 standard and linked to patient's Ayushman Bharat Health Account.</p>
+
+      <div class="mt-4 p-3 bg-slate-50 rounded-xl border text-left text-xs font-mono space-y-1">
+        <div><span class="text-slate-400">TXN Hash:</span> <span class="text-slate-700">0x9f8b...32a1</span></div>
+        <div><span class="text-slate-400">ABDM Gateway:</span> <span class="text-emerald-600 font-bold">200 OK (Sync Complete)</span></div>
+        <div><span class="text-slate-400">Time:</span> <span id="txnTimestamp" class="text-slate-700"></span></div>
+      </div>
+
+      <button onclick="closeModal()" class="mt-5 w-full bg-slate-900 hover:bg-black text-white text-xs font-semibold py-2.5 rounded-xl transition-all">
+        Close Window
+      </button>
+    </div>
+  </div>
+
   <script>
     let recognition;
     let isListening = false;
+    let activePatient = {
+      name: "Ramesh Sharma",
+      age: 52,
+      gender: "male",
+      abha: "91-8273-1920-44"
+    };
+
+    function scanMockABHA() {
+      document.getElementById('patientProfileTag').classList.remove('hidden');
+      document.getElementById('kioskPatName').innerText = activePatient.name;
+      document.getElementById('kioskAbhaId').innerText = "ABHA: " + activePatient.abha;
+      alert("ABHA QR Code Verified!\nPatient: Ramesh Sharma (Age: 52, Male)\nABHA ID: 91-8273-1920-44");
+    }
 
     function initSpeech() {
       const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
@@ -120,7 +219,7 @@
       const recognizer = new SpeechRecognition();
       recognizer.continuous = true;
       recognizer.interimResults = true;
-      recognizer.lang = 'hi-IN'; // Set to Hindi/Indian accent
+      recognizer.lang = 'hi-IN';
       
       recognizer.onresult = (event) => {
         let text = '';
@@ -134,6 +233,7 @@
         isListening = false;
         document.getElementById('micText').innerText = "Start Voice Intake";
         document.getElementById('micIcon').innerText = "🎙️";
+        document.getElementById('waveBox').classList.add('hidden');
       };
       return recognizer;
     }
@@ -147,6 +247,7 @@
         isListening = true;
         document.getElementById('micText').innerText = "Listening... Tap to Stop";
         document.getElementById('micIcon').innerText = "⏹️";
+        document.getElementById('waveBox').classList.remove('hidden');
       } else {
         recognition.stop();
       }
@@ -170,9 +271,9 @@
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({
             session_id: "SESS-" + Math.floor(1000 + Math.random() * 9000),
-            patient_name: "Ramesh Sharma",
-            age: 52,
-            gender: "male",
+            patient_name: activePatient.name,
+            age: activePatient.age,
+            gender: activePatient.gender,
             raw_transcript: text,
             language: "hi"
           })
@@ -180,15 +281,16 @@
         const data = await res.json();
         renderDoctorDashboard(data);
       } catch (err) {
-        alert("Could not reach backend. Verify FastAPI is running on port 8000.");
+        alert("Could not reach backend. Verify that FastAPI is running on port 8000.");
       }
     }
 
     function renderDoctorDashboard(data) {
       document.getElementById('emptyState').classList.add('hidden');
       document.getElementById('doctorContent').classList.remove('hidden');
+      document.getElementById('doctorActionBox').classList.remove('hidden');
 
-      // Triage Badge
+      // Triage
       const triage = document.getElementById('triageBadge');
       if (data.triage_status === "EMERGENCY_RED") {
         triage.classList.remove('hidden');
@@ -196,21 +298,30 @@
         triage.classList.add('hidden');
       }
 
-      // SOCRATES
+      // Fill Data
+      document.getElementById('docPatName').innerText = activePatient.name;
+      document.getElementById('docAbhaId').innerText = activePatient.abha;
       document.getElementById('socSite').innerText = data.socrates.site;
       document.getElementById('socOnset').innerText = data.socrates.onset;
       document.getElementById('socChar').innerText = data.socrates.character;
       document.getElementById('socRad').innerText = data.socrates.radiation;
       document.getElementById('socAssoc').innerText = data.socrates.associations.join(', ');
 
-      // AYUSH
       document.getElementById('ayushDosha').innerText = data.ayush_indicators.dominant_dosha_aggravation;
       document.getElementById('ayushAgni').innerText = data.ayush_indicators.agni;
       document.getElementById('ayushKoshtha').innerText = data.ayush_indicators.koshtha;
       document.getElementById('ayushAhara').innerText = data.ayush_indicators.ahara_vihara_trigger;
 
-      // FHIR
       document.getElementById('fhirPayload').innerText = JSON.stringify(data.fhir_bundle, null, 2);
+    }
+
+    function commitToABDM() {
+      document.getElementById('txnTimestamp').innerText = new Date().toLocaleTimeString();
+      document.getElementById('abdmModal').classList.remove('hidden');
+    }
+
+    function closeModal() {
+      document.getElementById('abdmModal').classList.add('hidden');
     }
   </script>
 </body>
