@@ -1,0 +1,217 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>SIH26047 - Clinical Case-Taking Kiosk</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-slate-100 text-slate-800 antialiased p-6">
+
+  <div class="max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-2 gap-6">
+
+    <div class="bg-white rounded-2xl shadow-md border border-slate-200 p-6 flex flex-col justify-between">
+      <div>
+        <div class="flex items-center justify-between pb-4 border-b border-slate-100">
+          <span class="text-xs font-bold uppercase tracking-wider text-blue-600 bg-blue-50 px-3 py-1 rounded-full">
+            Patient Kiosk (OPD Lobby)
+          </span>
+          <span class="text-xs text-slate-400">Language: <b>Hindi / English</b></span>
+        </div>
+
+        <h2 class="text-xl font-bold mt-4 text-slate-900">अपनी समस्या बताएं (Voice Clinical Intake)</h2>
+        <p class="text-sm text-slate-500 mb-6">Press the mic button and speak in Hindi or English.</p>
+
+        <div class="mb-4">
+          <label class="block text-xs font-semibold text-slate-400 uppercase mb-2">Or Tap Area of Pain:</label>
+          <div class="grid grid-cols-3 gap-2">
+            <button onclick="appendSymptom('Chaati me dard aur ghabrahat (Chest Pain)')" class="p-2 border rounded-lg hover:bg-slate-50 text-xs font-medium">🫀 Chest</button>
+            <button onclick="appendSymptom('Pet me jalan aur gas (Stomach Acid)')" class="p-2 border rounded-lg hover:bg-slate-50 text-xs font-medium">🫁 Abdomen</button>
+            <button onclick="appendSymptom('Ghutno me dard aur sujan (Joint Pain)')" class="p-2 border rounded-lg hover:bg-slate-50 text-xs font-medium">🦵 Knees/Joints</button>
+          </div>
+        </div>
+
+        <div class="mt-4">
+          <label class="block text-xs font-semibold text-slate-400 uppercase mb-1">Live Audio Transcript:</label>
+          <textarea id="transcript" rows="4" class="w-full border rounded-xl p-3 text-sm focus:ring-2 focus:ring-blue-500 outline-none" placeholder="Click 'Start Voice' or type your symptoms here..."></textarea>
+        </div>
+      </div>
+
+      <div class="mt-6 flex gap-3">
+        <button id="micBtn" onclick="toggleSpeech()" class="flex-1 bg-blue-600 hover:bg-blue-700 text-white font-medium py-3 rounded-xl flex items-center justify-center gap-2">
+          <span id="micIcon">🎙️</span> <span id="micText">Start Voice Intake</span>
+        </button>
+        <button onclick="sendToDoctor()" class="flex-1 bg-emerald-600 hover:bg-emerald-700 text-white font-medium py-3 rounded-xl">
+          Submit to Doctor ➔
+        </button>
+      </div>
+    </div>
+
+    <div class="bg-white rounded-2xl shadow-md border border-slate-200 p-6">
+      <div class="flex items-center justify-between pb-4 border-b border-slate-100">
+        <span class="text-xs font-bold uppercase tracking-wider text-purple-600 bg-purple-50 px-3 py-1 rounded-full">
+          Doctor's OPD Cockpit
+        </span>
+        <span id="triageBadge" class="hidden text-xs font-bold uppercase px-3 py-1 rounded-full bg-red-100 text-red-700">
+          🚨 Triage Alert: Emergency
+        </span>
+      </div>
+
+      <div id="emptyState" class="py-24 text-center text-slate-400">
+        <p class="text-3xl mb-2">📋</p>
+        <p class="text-sm">Awaiting patient submission from the lobby kiosk...</p>
+      </div>
+
+      <div id="doctorContent" class="hidden mt-4 space-y-4">
+        <div class="p-3 bg-slate-50 rounded-xl flex justify-between items-center text-xs">
+          <div><b>Patient:</b> Ramesh Sharma (Male, 52)</div>
+          <div><b>ABHA ID:</b> 91-8273-1920-44</div>
+        </div>
+
+        <div class="border rounded-xl p-4 bg-white">
+          <h3 class="text-sm font-bold text-slate-800 border-b pb-2 mb-2 flex items-center gap-2">
+            🩺 Structured Allopathic History (SOCRATES)
+          </h3>
+          <div class="grid grid-cols-2 gap-y-2 text-xs">
+            <div><span class="text-slate-400">Site:</span> <b id="socSite">-</b></div>
+            <div><span class="text-slate-400">Onset:</span> <b id="socOnset">-</b></div>
+            <div><span class="text-slate-400">Character:</span> <b id="socChar">-</b></div>
+            <div><span class="text-slate-400">Radiation:</span> <b id="socRad">-</b></div>
+            <div class="col-span-2"><span class="text-slate-400">Associated:</span> <b id="socAssoc">-</b></div>
+          </div>
+        </div>
+
+        <div class="border border-amber-200 rounded-xl p-4 bg-amber-50/40">
+          <h3 class="text-sm font-bold text-amber-900 border-b border-amber-200 pb-2 mb-2 flex items-center gap-2">
+            🌿 AYUSH Pariksha Baseline
+          </h3>
+          <div class="grid grid-cols-2 gap-y-2 text-xs text-amber-950">
+            <div><span class="text-amber-700">Dosha Imbalance:</span> <b id="ayushDosha">-</b></div>
+            <div><span class="text-amber-700">Agni (Digestion):</span> <b id="ayushAgni">-</b></div>
+            <div><span class="text-amber-700">Koshtha (Bowel):</span> <b id="ayushKoshtha">-</b></div>
+            <div><span class="text-amber-700">Ahara Pattern:</span> <b id="ayushAhara">-</b></div>
+          </div>
+        </div>
+
+        <div>
+          <details class="text-xs">
+            <summary class="font-semibold text-slate-500 cursor-pointer hover:underline">View ABDM FHIR R4 JSON Payload</summary>
+            <pre id="fhirPayload" class="mt-2 p-3 bg-slate-900 text-emerald-400 rounded-xl overflow-x-auto text-[11px] h-32"></pre>
+          </details>
+        </div>
+
+        <button onclick="alert('Signed & Pushed to National Health Information Exchange (ABDM)!')" class="w-full bg-slate-900 hover:bg-black text-white text-xs font-semibold py-3 rounded-xl">
+          Approve & Commit to ABDM Health Record
+        </button>
+      </div>
+    </div>
+
+  </div>
+
+  <script>
+    let recognition;
+    let isListening = false;
+
+    function initSpeech() {
+      const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+      if (!SpeechRecognition) {
+        alert("Web Speech API is not supported in this browser. Use Google Chrome.");
+        return null;
+      }
+      const recognizer = new SpeechRecognition();
+      recognizer.continuous = true;
+      recognizer.interimResults = true;
+      recognizer.lang = 'hi-IN'; // Set to Hindi/Indian accent
+      
+      recognizer.onresult = (event) => {
+        let text = '';
+        for (let i = event.resultIndex; i < event.results.length; ++i) {
+          text += event.results[i][0].transcript;
+        }
+        document.getElementById('transcript').value = text;
+      };
+
+      recognizer.onend = () => {
+        isListening = false;
+        document.getElementById('micText').innerText = "Start Voice Intake";
+        document.getElementById('micIcon').innerText = "🎙️";
+      };
+      return recognizer;
+    }
+
+    function toggleSpeech() {
+      if (!recognition) recognition = initSpeech();
+      if (!recognition) return;
+
+      if (!isListening) {
+        recognition.start();
+        isListening = true;
+        document.getElementById('micText').innerText = "Listening... Tap to Stop";
+        document.getElementById('micIcon').innerText = "⏹️";
+      } else {
+        recognition.stop();
+      }
+    }
+
+    function appendSymptom(val) {
+      const area = document.getElementById('transcript');
+      area.value = area.value ? area.value + ", " + val : val;
+    }
+
+    async function sendToDoctor() {
+      const text = document.getElementById('transcript').value;
+      if (!text) {
+        alert("Please enter or record a symptom first.");
+        return;
+      }
+
+      try {
+        const res = await fetch("http://127.0.0.1:8000/api/process-intake", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            session_id: "SESS-" + Math.floor(1000 + Math.random() * 9000),
+            patient_name: "Ramesh Sharma",
+            age: 52,
+            gender: "male",
+            raw_transcript: text,
+            language: "hi"
+          })
+        });
+        const data = await res.json();
+        renderDoctorDashboard(data);
+      } catch (err) {
+        alert("Could not reach backend. Verify FastAPI is running on port 8000.");
+      }
+    }
+
+    function renderDoctorDashboard(data) {
+      document.getElementById('emptyState').classList.add('hidden');
+      document.getElementById('doctorContent').classList.remove('hidden');
+
+      // Triage Badge
+      const triage = document.getElementById('triageBadge');
+      if (data.triage_status === "EMERGENCY_RED") {
+        triage.classList.remove('hidden');
+      } else {
+        triage.classList.add('hidden');
+      }
+
+      // SOCRATES
+      document.getElementById('socSite').innerText = data.socrates.site;
+      document.getElementById('socOnset').innerText = data.socrates.onset;
+      document.getElementById('socChar').innerText = data.socrates.character;
+      document.getElementById('socRad').innerText = data.socrates.radiation;
+      document.getElementById('socAssoc').innerText = data.socrates.associations.join(', ');
+
+      // AYUSH
+      document.getElementById('ayushDosha').innerText = data.ayush_indicators.dominant_dosha_aggravation;
+      document.getElementById('ayushAgni').innerText = data.ayush_indicators.agni;
+      document.getElementById('ayushKoshtha').innerText = data.ayush_indicators.koshtha;
+      document.getElementById('ayushAhara').innerText = data.ayush_indicators.ahara_vihara_trigger;
+
+      // FHIR
+      document.getElementById('fhirPayload').innerText = JSON.stringify(data.fhir_bundle, null, 2);
+    }
+  </script>
+</body>
+</html>
