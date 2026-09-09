@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>SIH26047 - Digital Clinical Intake Platform (MediKiosk)</title>
+  <title>SIH26047 - MediKiosk Clinical Intake Platform</title>
   <script src="https://cdn.tailwindcss.com"></script>
   <style>
     @keyframes bounceWave {
@@ -29,7 +29,7 @@
     <!-- LEFT PANEL: PATIENT INTAKE KIOSK -->
     <div class="bg-white rounded-2xl shadow-md border border-slate-200 p-6 flex flex-col justify-between">
       <div>
-        <div class="flex items-center justify-between pb-4 border-b border-slate-100">
+        <div class="flex items-center justify-between pb-3 border-b border-slate-100">
           <span class="text-xs font-bold uppercase tracking-wider text-blue-600 bg-blue-50 px-3 py-1 rounded-full flex items-center gap-1.5">
             <span class="w-2 h-2 rounded-full bg-blue-600 animate-ping"></span>
             Patient Kiosk (OPD Lobby)
@@ -39,86 +39,89 @@
           </button>
         </div>
 
-        <!-- FEATURE: DPDP 2023 PRIVACY & CONSENT BANNER -->
-        <div id="consentBox" class="mt-3 p-3 bg-amber-50 border border-amber-200 rounded-xl text-xs flex items-start gap-2 text-amber-900">
+        <!-- DPDP 2023 PRIVACY & CONSENT BANNER -->
+        <div id="consentBox" class="mt-2.5 p-2.5 bg-amber-50 border border-amber-200 rounded-xl text-xs flex items-start gap-2 text-amber-900">
           <input type="checkbox" id="dpdpConsent" checked class="mt-0.5 rounded text-blue-600 focus:ring-0 cursor-pointer" />
           <label for="dpdpConsent" class="cursor-pointer">
-            <b>DPDP Act 2023 Consent:</b> I voluntarily consent to share my symptoms and uploaded records for AI-assisted clinical pre-intake under the Ayushman Bharat Digital Mission (ABDM).
+            <b>DPDP Act 2023 Consent:</b> I voluntarily consent to share my health data for AI-assisted clinical pre-intake under ABDM guidelines.
           </label>
         </div>
 
         <!-- Verified Patient Tag -->
-        <div id="patientProfileTag" class="hidden mt-3 p-2.5 bg-emerald-50/60 border border-emerald-200 rounded-xl flex items-center justify-between text-xs">
-          <div>
-            <span class="text-slate-400">Patient:</span> <b id="kioskPatName" class="text-slate-800">Ramesh Sharma</b> (52, M)
-          </div>
-          <div class="text-emerald-700 font-mono font-semibold" id="kioskAbhaId">
-            ABHA: 91-8273-1920-44
+        <div id="patientProfileTag" class="hidden mt-2.5 p-2 bg-emerald-50/60 border border-emerald-200 rounded-xl flex items-center justify-between text-xs">
+          <div><span class="text-slate-400">Patient:</span> <b id="kioskPatName" class="text-slate-800">Ramesh Sharma</b> (52, M)</div>
+          <div class="text-emerald-700 font-mono font-semibold" id="kioskAbhaId">ABHA: 91-8273-1920-44</div>
+        </div>
+
+        <h2 class="text-lg font-bold mt-3 text-slate-900">AI Clinical Conversation (संवाद)</h2>
+        <p class="text-xs text-slate-500 mb-2">Speak via mic or tap symptoms. The AI will ask smart clinical follow-ups in Hindi.</p>
+
+        <!-- Quick Region Selector -->
+        <div class="mb-2.5">
+          <div class="grid grid-cols-3 gap-2">
+            <button onclick="quickSelect('Chaati me tez dard hai aur paseena aa raha hai')" class="p-2 border border-slate-200 rounded-xl hover:bg-slate-50 text-xs font-semibold text-slate-700 text-left flex items-center gap-1.5">
+              <span>🫀</span> Chest Pain
+            </button>
+            <button onclick="quickSelect('Pet me bahut jalan aur gas hai, bhookh nahi lagti')" class="p-2 border border-slate-200 rounded-xl hover:bg-slate-50 text-xs font-semibold text-slate-700 text-left flex items-center gap-1.5">
+              <span>🫁</span> Stomach Acid
+            </button>
+            <button onclick="quickSelect('Ghutno me subah dard aur sujan rehti hai')" class="p-2 border border-slate-200 rounded-xl hover:bg-slate-50 text-xs font-semibold text-slate-700 text-left flex items-center gap-1.5">
+              <span>🦵</span> Joint Pain
+            </button>
           </div>
         </div>
 
-        <h2 class="text-xl font-bold mt-4 text-slate-900">अपनी समस्या बताएं (Voice Clinical Intake)</h2>
-        <p class="text-xs text-slate-500 mb-3">Speak via mic, tap quick regions, or upload prior prescriptions.</p>
-
-        <!-- Quick Tap Symptom Cards -->
-        <div class="mb-3">
-          <label class="block text-[11px] font-semibold text-slate-400 uppercase tracking-wider mb-2">Select Primary Region:</label>
-          <div class="grid grid-cols-3 gap-2">
-            <button onclick="appendSymptom('Chaati me tez dard aur paseena (Severe Chest Pain)')" class="p-2 border border-slate-200 rounded-xl hover:bg-slate-50 text-xs font-semibold text-slate-700 transition-colors text-left flex items-center gap-1.5">
-              <span>🫀</span> Chest
-            </button>
-            <button onclick="appendSymptom('Pet me jalan aur gas (Stomach Acid/Indigestion)')" class="p-2 border border-slate-200 rounded-xl hover:bg-slate-50 text-xs font-semibold text-slate-700 transition-colors text-left flex items-center gap-1.5">
-              <span>🫁</span> Abdomen
-            </button>
-            <button onclick="appendSymptom('Ghutno me dard aur sujan (Joint Pain/Swelling)')" class="p-2 border border-slate-200 rounded-xl hover:bg-slate-50 text-xs font-semibold text-slate-700 transition-colors text-left flex items-center gap-1.5">
-              <span>🦵</span> Joints
-            </button>
+        <!-- FEATURE #1: DYNAMIC MULTI-TURN CHAT FEED -->
+        <div id="chatFeed" class="space-y-2 mb-2.5 max-h-44 min-h-[120px] overflow-y-auto p-3 bg-slate-50 border border-slate-200 rounded-xl text-xs">
+          <div class="flex gap-2 items-start">
+            <span class="font-bold text-blue-600 bg-blue-100 px-1.5 py-0.5 rounded text-[10px]">AI</span>
+            <div class="bg-white border p-2 rounded-xl text-slate-800 shadow-sm max-w-[85%]">
+              नमस्ते! मैं आपका डिजिटल सहायक हूँ। कृपया अपनी मुख्य बीमारी या लक्षण बताएं।
+              <div class="text-[10px] text-slate-400 mt-0.5">(Namaste! Please speak or select your chief complaint.)</div>
+            </div>
           </div>
         </div>
 
         <!-- Audio Waveform Indicator -->
-        <div id="waveBox" class="hidden flex items-center justify-center gap-1.5 h-8 bg-red-50 border border-red-200 rounded-xl mb-3">
+        <div id="waveBox" class="hidden flex items-center justify-center gap-1.5 h-8 bg-red-50 border border-red-200 rounded-xl mb-2.5">
           <div class="wave-bar"></div>
           <div class="wave-bar"></div>
           <div class="wave-bar"></div>
           <div class="wave-bar"></div>
           <div class="wave-bar"></div>
-          <span class="text-xs font-bold text-red-600 ml-2">Recording Voice (Hindi/English)...</span>
+          <span id="waveLabel" class="text-xs font-bold text-red-600 ml-2">Listening Hindi / English...</span>
         </div>
 
-        <!-- Transcript Input -->
-        <div class="mb-3">
-          <label class="block text-[11px] font-semibold text-slate-400 uppercase tracking-wider mb-1">Live Audio Transcript:</label>
-          <textarea id="transcript" rows="3" class="w-full border border-slate-200 rounded-xl p-2.5 text-xs focus:ring-2 focus:ring-blue-500 outline-none" placeholder="Tap 'Start Voice Intake' or click the symptom tags above..."></textarea>
-        </div>
+        <!-- Hidden Accumulated Transcript for Extraction Engine -->
+        <input type="hidden" id="transcript" value="" />
 
-        <!-- FEATURE: DOCUMENT & PRESCRIPTION SCANNER (OCR) -->
-        <div class="border-2 border-dashed border-slate-200 rounded-xl p-3 bg-slate-50/50 hover:bg-slate-50 transition-colors">
+        <!-- FEATURE #3: DOCUMENT & PRESCRIPTION SCANNER (OCR) -->
+        <div class="border-2 border-dashed border-slate-200 rounded-xl p-2.5 bg-slate-50/50 hover:bg-slate-50 transition-colors">
           <div class="flex items-center justify-between">
             <div class="flex items-center gap-2">
-              <span class="text-xl">📄</span>
+              <span class="text-lg">📄</span>
               <div>
                 <p class="text-xs font-bold text-slate-700">Scan Prior Prescription / Lab Report</p>
-                <p class="text-[11px] text-slate-400">Upload paper Rx or lab diagnostics for chronological digitization</p>
+                <p class="text-[10px] text-slate-400">Digitize physical slips into a chronological health timeline</p>
               </div>
             </div>
-            <label class="bg-white border border-slate-300 hover:bg-slate-100 text-slate-700 text-xs font-medium px-3 py-1.5 rounded-lg cursor-pointer shadow-sm">
+            <label class="bg-white border border-slate-300 hover:bg-slate-100 text-slate-700 text-xs font-medium px-2.5 py-1 rounded-lg cursor-pointer shadow-sm">
               Upload Slip
               <input type="file" id="fileUpload" class="hidden" accept="image/*,.pdf" onchange="simulateOCR(event)" />
             </label>
           </div>
-          <div id="ocrStatus" class="hidden mt-2 p-2 bg-blue-50 border border-blue-200 rounded-lg text-xs text-blue-800 flex items-center justify-between">
+          <div id="ocrStatus" class="hidden mt-2 p-1.5 bg-blue-50 border border-blue-200 rounded text-xs text-blue-800 flex items-center justify-between">
             <span id="ocrStatusText">Reading document...</span>
-            <span class="font-bold text-[10px] bg-blue-200 px-2 py-0.5 rounded">OCR Parsed</span>
+            <span class="font-bold text-[10px] bg-blue-200 px-1.5 py-0.5 rounded">OCR Parsed</span>
           </div>
         </div>
       </div>
 
-      <div class="mt-4 flex gap-3">
-        <button id="micBtn" onclick="toggleSpeech()" class="flex-1 bg-blue-600 hover:bg-blue-700 text-white font-medium py-3 rounded-xl flex items-center justify-center gap-2 shadow-sm transition-all">
-          <span id="micIcon">🎙️</span> <span id="micText">Start Voice Intake</span>
+      <div class="mt-3 flex gap-3">
+        <button id="micBtn" onclick="toggleSpeech()" class="flex-1 bg-blue-600 hover:bg-blue-700 text-white font-medium py-2.5 rounded-xl flex items-center justify-center gap-2 shadow-sm transition-all text-xs">
+          <span id="micIcon">🎙️</span> <span id="micText">Speak to AI</span>
         </button>
-        <button onclick="sendToDoctor()" class="flex-1 bg-emerald-600 hover:bg-emerald-700 text-white font-medium py-3 rounded-xl shadow-sm transition-all flex items-center justify-center gap-2">
+        <button onclick="sendToDoctor()" class="flex-1 bg-emerald-600 hover:bg-emerald-700 text-white font-medium py-2.5 rounded-xl shadow-sm transition-all flex items-center justify-center gap-2 text-xs">
           <span>Submit to Doctor</span> ➔
         </button>
       </div>
@@ -127,7 +130,7 @@
     <!-- RIGHT PANEL: DOCTOR'S COCKPIT (EDITABLE DRAFT) -->
     <div class="bg-white rounded-2xl shadow-md border border-slate-200 p-6 flex flex-col justify-between">
       <div>
-        <div class="flex items-center justify-between pb-4 border-b border-slate-100">
+        <div class="flex items-center justify-between pb-3 border-b border-slate-100">
           <div class="flex items-center gap-2">
             <span class="text-xs font-bold uppercase tracking-wider text-purple-600 bg-purple-50 px-3 py-1 rounded-full">
               Doctor's OPD Cockpit
@@ -142,103 +145,101 @@
         <!-- Empty State Placeholder -->
         <div id="emptyState" class="py-24 text-center text-slate-400">
           <p class="text-4xl mb-3">📋</p>
-          <p class="text-sm font-medium">Awaiting patient submission from the lobby kiosk...</p>
-          <p class="text-xs mt-1 text-slate-400">Speak or select a symptom on the left to generate the case sheet.</p>
+          <p class="text-sm font-medium">Awaiting patient conversation from lobby kiosk...</p>
+          <p class="text-xs mt-1 text-slate-400">Speak or select symptoms to generate real-time case sheet.</p>
         </div>
 
         <!-- Structured Clinical Record -->
-        <div id="doctorContent" class="hidden mt-4 space-y-3">
+        <div id="doctorContent" class="hidden mt-3 space-y-3">
           
           <!-- Identity Summary -->
-          <div class="p-2.5 bg-slate-50 border border-slate-200 rounded-xl flex justify-between items-center text-xs">
+          <div class="p-2 bg-slate-50 border border-slate-200 rounded-xl flex justify-between items-center text-xs">
             <div><b>Patient:</b> <span id="docPatName">Ramesh Sharma</span> (52, Male)</div>
             <div class="font-mono text-slate-600"><b>ABHA:</b> <span id="docAbhaId">91-8273-1920-44</span></div>
           </div>
 
-          <!-- FEATURE: CHRONOLOGICAL PRIOR RECORDS TIMELINE -->
-          <div id="ocrTimelineCard" class="hidden border border-blue-200 rounded-xl p-3 bg-blue-50/40">
-            <h3 class="text-xs font-bold text-blue-900 uppercase tracking-wider mb-1.5 flex items-center gap-1.5">
-              <span>📈</span> Extracted Prior Records Timeline
+          <!-- Chronological Prior Records Timeline -->
+          <div id="ocrTimelineCard" class="hidden border border-blue-200 rounded-xl p-2.5 bg-blue-50/40">
+            <h3 class="text-xs font-bold text-blue-900 uppercase tracking-wider mb-1 flex items-center gap-1.5">
+              <span>📈</span> Prior Records Digitized (Timeline)
             </h3>
-            <div id="ocrTimelineItems" class="space-y-1 text-xs text-blue-950">
-              <!-- Dynamically populated -->
-            </div>
+            <div id="ocrTimelineItems" class="space-y-1 text-xs text-blue-950"></div>
           </div>
 
-          <!-- Allopathic SOCRATES Card (Doctor Editable) -->
-          <div class="border border-slate-200 rounded-xl p-3.5 bg-white shadow-sm">
-            <div class="flex items-center justify-between border-b pb-2 mb-2.5">
+          <!-- FEATURE #6: Editable Allopathic SOCRATES Card -->
+          <div class="border border-slate-200 rounded-xl p-3 bg-white shadow-sm">
+            <div class="flex items-center justify-between border-b pb-1.5 mb-2">
               <h3 class="text-xs font-bold text-slate-800 uppercase tracking-wider flex items-center gap-1.5">
                 🩺 Allopathic History (SOCRATES)
               </h3>
-              <span class="text-[10px] text-blue-600 font-semibold bg-blue-50 px-2 py-0.5 rounded">Editable by Doctor</span>
+              <span class="text-[10px] text-blue-600 font-semibold bg-blue-50 px-2 py-0.5 rounded">Editable Draft</span>
             </div>
             <div class="grid grid-cols-2 gap-2 text-xs">
               <div>
-                <label class="text-[10px] text-slate-400 block font-medium">Site:</label>
+                <label class="text-[10px] text-slate-400 block">Site:</label>
                 <input id="socSite" class="w-full font-semibold border-b border-dashed border-slate-300 focus:border-blue-500 focus:outline-none bg-transparent" />
               </div>
               <div>
-                <label class="text-[10px] text-slate-400 block font-medium">Onset:</label>
+                <label class="text-[10px] text-slate-400 block">Onset:</label>
                 <input id="socOnset" class="w-full font-semibold border-b border-dashed border-slate-300 focus:border-blue-500 focus:outline-none bg-transparent" />
               </div>
               <div>
-                <label class="text-[10px] text-slate-400 block font-medium">Character:</label>
+                <label class="text-[10px] text-slate-400 block">Character:</label>
                 <input id="socChar" class="w-full font-semibold border-b border-dashed border-slate-300 focus:border-blue-500 focus:outline-none bg-transparent" />
               </div>
               <div>
-                <label class="text-[10px] text-slate-400 block font-medium">Radiation:</label>
+                <label class="text-[10px] text-slate-400 block">Radiation:</label>
                 <input id="socRad" class="w-full font-semibold border-b border-dashed border-slate-300 focus:border-blue-500 focus:outline-none bg-transparent" />
               </div>
               <div class="col-span-2">
-                <label class="text-[10px] text-slate-400 block font-medium">Associated Signs:</label>
+                <label class="text-[10px] text-slate-400 block">Associated Signs:</label>
                 <input id="socAssoc" class="w-full font-semibold border-b border-dashed border-slate-300 focus:border-blue-500 focus:outline-none bg-transparent" />
               </div>
             </div>
           </div>
 
-          <!-- AYUSH Pariksha Card (Doctor Editable) -->
-          <div class="border border-amber-200 rounded-xl p-3.5 bg-amber-50/40 shadow-sm">
-            <div class="flex items-center justify-between border-b border-amber-200 pb-2 mb-2.5">
+          <!-- FEATURE #6: Editable AYUSH Pariksha Card -->
+          <div class="border border-amber-200 rounded-xl p-3 bg-amber-50/40 shadow-sm">
+            <div class="flex items-center justify-between border-b border-amber-200 pb-1.5 mb-2">
               <h3 class="text-xs font-bold text-amber-900 uppercase tracking-wider flex items-center gap-1.5">
                 🌿 AYUSH Pariksha Baseline
               </h3>
-              <span class="text-[10px] text-amber-800 font-semibold bg-amber-100 px-2 py-0.5 rounded">Editable by Doctor</span>
+              <span class="text-[10px] text-amber-800 font-semibold bg-amber-100 px-2 py-0.5 rounded">Editable Draft</span>
             </div>
             <div class="grid grid-cols-2 gap-2 text-xs text-amber-950">
               <div>
-                <label class="text-[10px] text-amber-700 block font-medium">Dosha Aggravation:</label>
+                <label class="text-[10px] text-amber-700 block">Dosha Aggravation:</label>
                 <input id="ayushDosha" class="w-full font-semibold border-b border-dashed border-amber-300 focus:border-amber-600 focus:outline-none bg-transparent" />
               </div>
               <div>
-                <label class="text-[10px] text-amber-700 block font-medium">Agni (Digestion):</label>
+                <label class="text-[10px] text-amber-700 block">Agni (Digestion):</label>
                 <input id="ayushAgni" class="w-full font-semibold border-b border-dashed border-amber-300 focus:border-amber-600 focus:outline-none bg-transparent" />
               </div>
               <div>
-                <label class="text-[10px] text-amber-700 block font-medium">Koshtha (Bowel):</label>
+                <label class="text-[10px] text-amber-700 block">Koshtha (Bowel):</label>
                 <input id="ayushKoshtha" class="w-full font-semibold border-b border-dashed border-amber-300 focus:border-amber-600 focus:outline-none bg-transparent" />
               </div>
               <div>
-                <label class="text-[10px] text-amber-700 block font-medium">Ahara-Vihara:</label>
+                <label class="text-[10px] text-amber-700 block">Ahara-Vihara:</label>
                 <input id="ayushAhara" class="w-full font-semibold border-b border-dashed border-amber-300 focus:border-amber-600 focus:outline-none bg-transparent" />
               </div>
             </div>
           </div>
 
-          <!-- ABDM FHIR R4 Bundle Payload Toggle -->
+          <!-- ABDM FHIR R4 Bundle Payload -->
           <div>
             <details class="text-xs">
-              <summary class="font-semibold text-slate-500 hover:text-slate-800 cursor-pointer transition-colors">
+              <summary class="font-semibold text-slate-500 hover:text-slate-800 cursor-pointer">
                 View Generated ABDM FHIR R4 JSON Payload
               </summary>
-              <pre id="fhirPayload" class="mt-2 p-3 bg-slate-900 text-emerald-400 rounded-xl overflow-x-auto text-[11px] h-28"></pre>
+              <pre id="fhirPayload" class="mt-2 p-2.5 bg-slate-900 text-emerald-400 rounded-xl overflow-x-auto text-[11px] h-24"></pre>
             </details>
           </div>
         </div>
       </div>
 
       <!-- Action Button -->
-      <div id="doctorActionBox" class="hidden mt-4">
+      <div id="doctorActionBox" class="hidden mt-3">
         <button onclick="commitToABDM()" class="w-full bg-slate-900 hover:bg-black text-white text-xs font-semibold py-3 rounded-xl shadow transition-all flex items-center justify-center gap-2">
           <span>✓</span> Verify, Sign & Commit to ABDM Health Record
         </button>
@@ -250,29 +251,26 @@
   <!-- CONFIRMATION MODAL -->
   <div id="abdmModal" class="hidden fixed inset-0 bg-slate-900/60 backdrop-blur-sm flex items-center justify-center p-4 z-50">
     <div class="bg-white max-w-md w-full rounded-2xl p-6 shadow-2xl border border-slate-200 text-center">
-      <div class="w-12 h-12 bg-emerald-100 text-emerald-600 rounded-full flex items-center justify-center mx-auto text-2xl mb-3">
-        ✓
-      </div>
+      <div class="w-12 h-12 bg-emerald-100 text-emerald-600 rounded-full flex items-center justify-center mx-auto text-2xl mb-3">✓</div>
       <h3 class="text-lg font-bold text-slate-900">Signed to ABDM Registry</h3>
-      <p class="text-xs text-slate-500 mt-1">Doctor-verified clinical encounter successfully converted to FHIR R4 standard and linked to patient's Ayushman Bharat Health Account.</p>
+      <p class="text-xs text-slate-500 mt-1">Doctor-verified encounter converted to FHIR R4 standard and synced to patient's ABHA account.</p>
 
       <div class="mt-4 p-3 bg-slate-50 rounded-xl border text-left text-xs font-mono space-y-1">
-        <div><span class="text-slate-400">Consent Verified:</span> <span class="text-emerald-600 font-bold">DPDP-2023 Explicit</span></div>
+        <div><span class="text-slate-400">DPDP Consent:</span> <span class="text-emerald-600 font-bold">Explicit Verified</span></div>
         <div><span class="text-slate-400">Doctor Signature:</span> <span class="text-slate-700">Dr. V. Sharma (MCI-48291)</span></div>
-        <div><span class="text-slate-400">TXN Hash:</span> <span class="text-slate-700">0x9f8b...32a1</span></div>
-        <div><span class="text-slate-400">ABDM Gateway:</span> <span class="text-emerald-600 font-bold">200 OK (Sync Complete)</span></div>
-        <div><span class="text-slate-400">Time:</span> <span id="txnTimestamp" class="text-slate-700"></span></div>
+        <div><span class="text-slate-400">ABDM Sync:</span> <span class="text-emerald-600 font-bold">200 OK (FHIR Validated)</span></div>
+        <div><span class="text-slate-400">Timestamp:</span> <span id="txnTimestamp" class="text-slate-700"></span></div>
       </div>
 
-      <button onclick="closeModal()" class="mt-5 w-full bg-slate-900 hover:bg-black text-white text-xs font-semibold py-2.5 rounded-xl transition-all">
-        Close Window
-      </button>
+      <button onclick="closeModal()" class="mt-4 w-full bg-slate-900 hover:bg-black text-white text-xs font-semibold py-2.5 rounded-xl transition-all">Close</button>
     </div>
   </div>
 
   <script>
     let recognition;
     let isListening = false;
+    let conversationTurn = 0;
+    let conversationHistory = [];
     let uploadedDocs = [];
     let activePatient = {
       name: "Ramesh Sharma",
@@ -280,6 +278,16 @@
       gender: "male",
       abha: "91-8273-1920-44"
     };
+
+    function speakAI(text) {
+      if ('speechSynthesis' in window) {
+        window.speechSynthesis.cancel();
+        const utterance = new SpeechSynthesisUtterance(text);
+        utterance.lang = 'hi-IN';
+        utterance.rate = 0.95;
+        window.speechSynthesis.speak(utterance);
+      }
+    }
 
     function scanMockABHA() {
       document.getElementById('patientProfileTag').classList.remove('hidden');
@@ -295,39 +303,36 @@
       const statusBox = document.getElementById('ocrStatus');
       const statusText = document.getElementById('ocrStatusText');
       statusBox.classList.remove('hidden');
-      statusText.innerText = `Scanning ${file.name} with OCR engine...`;
+      statusText.innerText = `Scanning ${file.name}...`;
 
       setTimeout(() => {
-        statusText.innerText = `Extracted: Fasting Glucose (142 mg/dL) & BP Slip (150/95)`;
+        statusText.innerText = `Extracted: Fasting Sugar (142 mg/dL) & Prior Rx (Amlodipine)`;
         uploadedDocs = [
           { date: "15 Jan 2026", test: "Fasting Blood Sugar", value: "142 mg/dL", status: "HIGH" },
           { date: "02 Feb 2026", test: "Prior Prescription", value: "Amlodipine 5mg OD", status: "RECORDED" }
         ];
-      }, 1200);
+      }, 1000);
     }
 
     function initSpeech() {
-      const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
-      if (!SpeechRecognition) {
+      const SpeechRec = window.SpeechRecognition || window.webkitSpeechRecognition;
+      if (!SpeechRec) {
         alert("Web Speech API is not supported in this browser. Use Google Chrome.");
         return null;
       }
-      const recognizer = new SpeechRecognition();
-      recognizer.continuous = true;
-      recognizer.interimResults = true;
+      const recognizer = new SpeechRec();
+      recognizer.continuous = false;
+      recognizer.interimResults = false;
       recognizer.lang = 'hi-IN';
-      
+
       recognizer.onresult = (event) => {
-        let text = '';
-        for (let i = event.resultIndex; i < event.results.length; ++i) {
-          text += event.results[i][0].transcript;
-        }
-        document.getElementById('transcript').value = text;
+        const spoken = event.results[0][0].transcript;
+        handleUserTurn(spoken);
       };
 
       recognizer.onend = () => {
         isListening = false;
-        document.getElementById('micText').innerText = "Start Voice Intake";
+        document.getElementById('micText').innerText = "Speak to AI";
         document.getElementById('micIcon').innerText = "🎙️";
         document.getElementById('waveBox').classList.add('hidden');
       };
@@ -341,7 +346,7 @@
       if (!isListening) {
         recognition.start();
         isListening = true;
-        document.getElementById('micText').innerText = "Listening... Tap to Stop";
+        document.getElementById('micText').innerText = "Listening... Speak now";
         document.getElementById('micIcon').innerText = "⏹️";
         document.getElementById('waveBox').classList.remove('hidden');
       } else {
@@ -349,9 +354,70 @@
       }
     }
 
-    function appendSymptom(val) {
-      const area = document.getElementById('transcript');
-      area.value = area.value ? area.value + ", " + val : val;
+    function quickSelect(text) {
+      handleUserTurn(text);
+    }
+
+    // MULTI-TURN CONVERSATIONAL STATE MACHINE
+    function handleUserTurn(userText) {
+      const feed = document.getElementById('chatFeed');
+      conversationHistory.push(userText);
+      document.getElementById('transcript').value = conversationHistory.join(". ");
+
+      // Append User message bubble
+      feed.innerHTML += `
+        <div class="flex gap-2 justify-end">
+          <div class="bg-blue-600 text-white p-2 rounded-xl text-xs max-w-[85%]">${userText}</div>
+        </div>
+      `;
+      feed.scrollTop = feed.scrollHeight;
+
+      // Smart dynamic clinical branching
+      if (conversationTurn === 0) {
+        const lower = userText.toLowerCase();
+        let followUpQuestion = "";
+
+        if (lower.includes("chaati") || lower.includes("chest") || lower.includes("heart")) {
+          followUpQuestion = "यह दर्द कब से है, और क्या यह बाएं हाथ या जबड़े की तरफ फैल रहा है? क्या पसीना आ रहा है?";
+        } else if (lower.includes("pet") || lower.includes("jalan") || lower.includes("gas") || lower.includes("acid")) {
+          followUpQuestion = "यह जलन कितने दिनों से है? क्या खाना खाने के बाद यह बढ़ती है और पेट भारी लगता है?";
+        } else {
+          followUpQuestion = "यह तकलीफ कितने दिनों से है, और क्या सुबह उठने पर आपको जोड़ों में जकड़न महसूस होती है?";
+        }
+
+        conversationTurn = 1;
+        setTimeout(() => {
+          feed.innerHTML += `
+            <div class="flex gap-2 items-start">
+              <span class="font-bold text-blue-600 bg-blue-100 px-1.5 py-0.5 rounded text-[10px]">AI</span>
+              <div class="bg-white border p-2 rounded-xl text-slate-800 shadow-sm max-w-[85%]">
+                ${followUpQuestion}
+              </div>
+            </div>
+          `;
+          feed.scrollTop = feed.scrollHeight;
+          speakAI(followUpQuestion);
+        }, 500);
+
+      } else if (conversationTurn === 1) {
+        conversationTurn = 2;
+        const resolutionMsg = "धन्यवाद। आपकी पूरी जानकारी और पूर्व इतिहास दर्ज कर लिया गया है। अब 'Submit to Doctor' दबाएं।";
+
+        setTimeout(() => {
+          feed.innerHTML += `
+            <div class="flex gap-2 items-start">
+              <span class="font-bold text-emerald-600 bg-emerald-100 px-1.5 py-0.5 rounded text-[10px]">AI</span>
+              <div class="bg-emerald-50 border border-emerald-200 p-2 rounded-xl text-emerald-900 shadow-sm max-w-[85%]">
+                ${resolutionMsg}
+              </div>
+            </div>
+          `;
+          feed.scrollTop = feed.scrollHeight;
+          speakAI(resolutionMsg);
+          // Trigger immediate evaluation into the draft
+          sendToDoctor();
+        }, 500);
+      }
     }
 
     async function sendToDoctor() {
@@ -363,7 +429,7 @@
 
       const text = document.getElementById('transcript').value;
       if (!text && uploadedDocs.length === 0) {
-        alert("Please speak, type a symptom, or upload a prescription first.");
+        alert("Please speak or select a symptom first.");
         return;
       }
 
@@ -388,10 +454,10 @@
           return;
         }
       } catch (err) {
-        console.warn("FastAPI offline/blocked. Activating robust in-browser clinical parser...");
+        console.warn("FastAPI offline. Running in-browser clinical engine...");
       }
 
-      // In-browser clinical fallback engine
+      // Client-side clinical extraction fallback
       const normalized = text.toLowerCase();
       const redFlags = ["chest", "chaati", "heart", "bleeding", "unconscious", "stroke", "paralysis", "paseena"];
       const isEmergency = redFlags.some(k => normalized.includes(k));
@@ -400,15 +466,15 @@
       const fallbackData = {
         triage_status: isEmergency ? "EMERGENCY_RED" : "ROUTINE",
         socrates: {
-          site: isEmergency ? "Chest / Retrosternal" : (isDigestive ? "Epigastric / Abdomen" : "Peripheral Joints"),
+          site: isEmergency ? "Chest / Retrosternal" : (isDigestive ? "Epigastric / Abdomen" : "Bilateral Knee Joints"),
           onset: isEmergency ? "Acute (3 hours)" : "Chronic (3+ days)",
-          character: isEmergency ? "Crushing / Squeezing Pressure" : (isDigestive ? "Burning sensation (Vidaha)" : "Aching / Stiffness"),
+          character: isEmergency ? "Crushing / Squeezing Pressure" : (isDigestive ? "Burning sensation (Vidaha)" : "Stiffness & Aching"),
           radiation: isEmergency ? "Radiates to left arm and jaw" : "Localized",
           associations: isEmergency ? ["Diaphoresis (Profuse Sweating)", "Dyspnea"] : (isDigestive ? ["Amlapitta", "Bloating"] : ["Morning Stiffness"])
         },
         ayush_indicators: {
-          dominant_dosha_aggravation: isEmergency ? "Vata-Vyadhi (Prana Vata disruption)" : (isDigestive ? "Pitta-Vata (Amlapitta)" : "Vata-Kapha"),
-          agni: isEmergency ? "Tikshnagni (Erratic)" : (isDigestive ? "Mandagni (Impaired digestive fire)" : "Vishamagni"),
+          dominant_dosha_aggravation: isEmergency ? "Prana Vata disruption" : (isDigestive ? "Pitta-Vata (Amlapitta)" : "Vata-Kapha (Sandhigata Vata)"),
+          agni: isEmergency ? "Tikshnagni" : (isDigestive ? "Mandagni (Diminished digestive fire)" : "Vishamagni"),
           koshtha: isEmergency ? "Krura (Hard / Constipated)" : (isDigestive ? "Mrudu" : "Madhyama"),
           ahara_vihara_trigger: isEmergency ? "Excessive exertion & Chinta (stress)" : "Teekshna (spicy) food & irregular meal timing"
         },
@@ -452,7 +518,6 @@
       document.getElementById('doctorContent').classList.remove('hidden');
       document.getElementById('doctorActionBox').classList.remove('hidden');
 
-      // Triage
       const triage = document.getElementById('triageBadge');
       if (data.triage_status === "EMERGENCY_RED") {
         triage.classList.remove('hidden');
@@ -460,7 +525,6 @@
         triage.classList.add('hidden');
       }
 
-      // Demographic
       document.getElementById('docPatName').innerText = activePatient.name;
       document.getElementById('docAbhaId').innerText = activePatient.abha;
 
@@ -477,7 +541,7 @@
       document.getElementById('ayushKoshtha').value = data.ayush_indicators.koshtha;
       document.getElementById('ayushAhara').value = data.ayush_indicators.ahara_vihara_trigger;
 
-      // Populate Timeline if documents were scanned
+      // Timeline check
       if (uploadedDocs.length > 0) {
         const timelineBox = document.getElementById('ocrTimelineCard');
         const timelineItems = document.getElementById('ocrTimelineItems');
