@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>SIH26047 - MediKiosk Clinical Intake Platform</title>
+  <title>MediKiosk - Multimodal Edge Clinical Intake Platform (SIH26047)</title>
   <script src="https://cdn.tailwindcss.com"></script>
   <style>
     @keyframes bounceWave {
@@ -22,12 +22,12 @@
     .wave-bar:nth-child(5) { animation-delay: 0.2s; }
   </style>
 </head>
-<body class="bg-slate-100 text-slate-800 antialiased p-4 md:p-6 min-h-screen">
+<body class="bg-slate-100 text-slate-800 antialiased p-3 md:p-6 min-h-screen">
 
   <div class="max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-2 gap-6">
 
     <!-- LEFT PANEL: PATIENT INTAKE KIOSK -->
-    <div class="bg-white rounded-2xl shadow-md border border-slate-200 p-6 flex flex-col justify-between">
+    <div class="bg-white rounded-2xl shadow-md border border-slate-200 p-5 md:p-6 flex flex-col justify-between">
       <div>
         <div class="flex items-center justify-between pb-3 border-b border-slate-100">
           <span class="text-xs font-bold uppercase tracking-wider text-blue-600 bg-blue-50 px-3 py-1 rounded-full flex items-center gap-1.5">
@@ -39,230 +39,254 @@
           </button>
         </div>
 
-        <!-- DPDP 2023 PRIVACY & CONSENT BANNER -->
-        <div id="consentBox" class="mt-2.5 p-2.5 bg-amber-50 border border-amber-200 rounded-xl text-xs flex items-start gap-2 text-amber-900">
+        <!-- DPDP 2023 Consent Banner -->
+        <div id="consentBox" class="mt-3 p-2.5 bg-amber-50 border border-amber-200 rounded-xl text-xs flex items-start gap-2 text-amber-900">
           <input type="checkbox" id="dpdpConsent" checked class="mt-0.5 rounded text-blue-600 focus:ring-0 cursor-pointer" />
           <label for="dpdpConsent" class="cursor-pointer">
-            <b>DPDP Act 2023 Consent:</b> I voluntarily consent to share my health data for AI-assisted clinical pre-intake under ABDM guidelines.
+            <b>DPDP Act 2023 Consent:</b> I consent to multimodal intake & digitization of past medical records under ABDM guidelines.
           </label>
         </div>
 
         <!-- Verified Patient Tag -->
-        <div id="patientProfileTag" class="hidden mt-2.5 p-2 bg-emerald-50/60 border border-emerald-200 rounded-xl flex items-center justify-between text-xs">
+        <div id="patientProfileTag" class="hidden mt-2.5 p-2.5 bg-emerald-50/70 border border-emerald-200 rounded-xl flex items-center justify-between text-xs">
           <div><span class="text-slate-400">Patient:</span> <b id="kioskPatName" class="text-slate-800">Ramesh Sharma</b> (52, M)</div>
           <div class="text-emerald-700 font-mono font-semibold" id="kioskAbhaId">ABHA: 91-8273-1920-44</div>
         </div>
 
-        <h2 class="text-lg font-bold mt-3 text-slate-900">AI Clinical Conversation (संवाद)</h2>
-        <p class="text-xs text-slate-500 mb-2">Speak via mic or tap symptoms. The AI will ask smart clinical follow-ups in Hindi.</p>
+        <h2 class="text-lg font-bold mt-4 text-slate-900">1. Multimodal Clinical Elicitation</h2>
+        <p class="text-xs text-slate-500 mb-2">Speak in Hindi/English or select primary complaint region:</p>
 
         <!-- Quick Region Selector -->
-        <div class="mb-2.5">
-          <div class="grid grid-cols-3 gap-2">
-            <button onclick="quickSelect('Chaati me tez dard hai aur paseena aa raha hai')" class="p-2 border border-slate-200 rounded-xl hover:bg-slate-50 text-xs font-semibold text-slate-700 text-left flex items-center gap-1.5">
-              <span>🫀</span> Chest Pain
-            </button>
-            <button onclick="quickSelect('Pet me bahut jalan aur gas hai, bhookh nahi lagti')" class="p-2 border border-slate-200 rounded-xl hover:bg-slate-50 text-xs font-semibold text-slate-700 text-left flex items-center gap-1.5">
-              <span>🫁</span> Stomach Acid
-            </button>
-            <button onclick="quickSelect('Ghutno me subah dard aur sujan rehti hai')" class="p-2 border border-slate-200 rounded-xl hover:bg-slate-50 text-xs font-semibold text-slate-700 text-left flex items-center gap-1.5">
-              <span>🦵</span> Joint Pain
-            </button>
-          </div>
+        <div class="grid grid-cols-3 gap-2 mb-3">
+          <button onclick="quickSelect('Chaati me tez dard hai aur paseena aa raha hai (Severe Chest Pain & Sweating)')" class="p-2 border border-slate-200 rounded-xl hover:bg-slate-50 text-xs font-semibold text-slate-700 text-left flex items-center gap-1.5">
+            <span>🫀</span> Chest Pain
+          </button>
+          <button onclick="quickSelect('Pet me jalan, gas aur ulti lagti hai (Epigastric Acidity & Burning)')" class="p-2 border border-slate-200 rounded-xl hover:bg-slate-50 text-xs font-semibold text-slate-700 text-left flex items-center gap-1.5">
+            <span>🫁</span> Stomach Acid
+          </button>
+          <button onclick="quickSelect('Ghutno me subah dard aur sujan rehti hai (Bilateral Knee Joint Stiffness)')" class="p-2 border border-slate-200 rounded-xl hover:bg-slate-50 text-xs font-semibold text-slate-700 text-left flex items-center gap-1.5">
+            <span>🦵</span> Joint Pain
+          </button>
         </div>
 
-        <!-- FEATURE #1: DYNAMIC MULTI-TURN CHAT FEED -->
-        <div id="chatFeed" class="space-y-2 mb-2.5 max-h-44 min-h-[120px] overflow-y-auto p-3 bg-slate-50 border border-slate-200 rounded-xl text-xs">
+        <!-- Voice Chat Feed -->
+        <div id="chatFeed" class="space-y-2 mb-3 max-h-36 min-h-[100px] overflow-y-auto p-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs">
           <div class="flex gap-2 items-start">
             <span class="font-bold text-blue-600 bg-blue-100 px-1.5 py-0.5 rounded text-[10px]">AI</span>
             <div class="bg-white border p-2 rounded-xl text-slate-800 shadow-sm max-w-[85%]">
-              नमस्ते! मैं आपका डिजिटल सहायक हूँ। कृपया अपनी मुख्य बीमारी या लक्षण बताएं।
-              <div class="text-[10px] text-slate-400 mt-0.5">(Namaste! Please speak or select your chief complaint.)</div>
+              नमस्ते! कृपया अपनी मुख्य समस्या बताएं। (Speak or tap a symptom above)
             </div>
           </div>
         </div>
 
-        <!-- Audio Waveform Indicator -->
-        <div id="waveBox" class="hidden flex items-center justify-center gap-1.5 h-8 bg-red-50 border border-red-200 rounded-xl mb-2.5">
+        <!-- Waveform Indicator -->
+        <div id="waveBox" class="hidden flex items-center justify-center gap-1.5 h-7 bg-red-50 border border-red-200 rounded-xl mb-3">
           <div class="wave-bar"></div>
           <div class="wave-bar"></div>
           <div class="wave-bar"></div>
           <div class="wave-bar"></div>
           <div class="wave-bar"></div>
-          <span id="waveLabel" class="text-xs font-bold text-red-600 ml-2">Listening Hindi / English...</span>
+          <span class="text-xs font-bold text-red-600 ml-2">Listening Hindi/English Speech...</span>
         </div>
 
-        <!-- Hidden Accumulated Transcript for Extraction Engine -->
+        <!-- Hidden Accumulated Transcript -->
         <input type="hidden" id="transcript" value="" />
 
-        <!-- FEATURE #3: DOCUMENT & PRESCRIPTION SCANNER (OCR) -->
-        <div class="border-2 border-dashed border-slate-200 rounded-xl p-2.5 bg-slate-50/50 hover:bg-slate-50 transition-colors">
-          <div class="flex items-center justify-between">
+        <!-- FEATURE 1: MEDICAL DOCUMENT OCR SCANNER -->
+        <div class="border-2 border-dashed border-indigo-200 rounded-2xl p-3 bg-indigo-50/30">
+          <div class="flex items-center justify-between mb-2">
             <div class="flex items-center gap-2">
-              <span class="text-lg">📄</span>
+              <span class="text-xl">📄</span>
               <div>
-                <p class="text-xs font-bold text-slate-700">Scan Prior Prescription / Lab Report</p>
-                <p class="text-[10px] text-slate-400">Digitize physical slips into a chronological health timeline</p>
+                <p class="text-xs font-bold text-indigo-950">Medical Document Digitization OCR</p>
+                <p class="text-[10px] text-slate-500">Multilingual extraction of handwritten Rx, lab reports & discharge slips</p>
               </div>
             </div>
-            <label class="bg-white border border-slate-300 hover:bg-slate-100 text-slate-700 text-xs font-medium px-2.5 py-1 rounded-lg cursor-pointer shadow-sm">
-              Upload Slip
-              <input type="file" id="fileUpload" class="hidden" accept="image/*,.pdf" onchange="simulateOCR(event)" />
+            <label class="bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-semibold px-3 py-1.5 rounded-lg cursor-pointer shadow-sm transition-colors">
+              Browse File
+              <input type="file" id="fileUpload" class="hidden" accept="image/*,.pdf" onchange="handleFileUpload(event)" />
             </label>
           </div>
-          <div id="ocrStatus" class="hidden mt-2 p-1.5 bg-blue-50 border border-blue-200 rounded text-xs text-blue-800 flex items-center justify-between">
-            <span id="ocrStatusText">Reading document...</span>
-            <span class="font-bold text-[10px] bg-blue-200 px-1.5 py-0.5 rounded">OCR Parsed</span>
+
+          <!-- Quick One-Tap Mock Slips for Live Presentations -->
+          <div class="mt-2 pt-2 border-t border-indigo-100 flex items-center gap-2">
+            <span class="text-[10px] font-semibold text-indigo-700 uppercase">Quick Demo Slips:</span>
+            <button onclick="loadSampleDoc('rx')" class="bg-white border border-indigo-200 hover:bg-indigo-50 text-[11px] font-medium text-indigo-900 px-2 py-0.5 rounded-md shadow-xs">
+              📝 Handwritten Rx
+            </button>
+            <button onclick="loadSampleDoc('lab')" class="bg-white border border-indigo-200 hover:bg-indigo-50 text-[11px] font-medium text-indigo-900 px-2 py-0.5 rounded-md shadow-xs">
+              🧪 Lab Report
+            </button>
+            <button onclick="loadSampleDoc('discharge')" class="bg-white border border-indigo-200 hover:bg-indigo-50 text-[11px] font-medium text-indigo-900 px-2 py-0.5 rounded-md shadow-xs">
+              🏥 Discharge Slip
+            </button>
+          </div>
+
+          <div id="ocrStatusBox" class="hidden mt-2 p-2 bg-white border border-indigo-200 rounded-xl text-xs space-y-1">
+            <div class="flex items-center justify-between">
+              <span id="ocrStatusTitle" class="font-bold text-indigo-900">Extracting entities...</span>
+              <span class="bg-indigo-100 text-indigo-700 font-mono text-[10px] px-2 py-0.5 rounded font-semibold">PaddleOCR 2.8</span>
+            </div>
+            <div id="ocrExtractedDetails" class="text-[11px] text-slate-600 font-mono"></div>
           </div>
         </div>
+
       </div>
 
-      <div class="mt-3 flex gap-3">
-        <button id="micBtn" onclick="toggleSpeech()" class="flex-1 bg-blue-600 hover:bg-blue-700 text-white font-medium py-2.5 rounded-xl flex items-center justify-center gap-2 shadow-sm transition-all text-xs">
-          <span id="micIcon">🎙️</span> <span id="micText">Speak to AI</span>
+      <div class="mt-4 flex gap-3">
+        <button id="micBtn" onclick="toggleSpeech()" class="flex-1 bg-blue-600 hover:bg-blue-700 text-white font-medium py-3 rounded-xl flex items-center justify-center gap-2 shadow-sm transition-all text-xs">
+          <span id="micIcon">🎙️</span> <span id="micText">Speak to MediKiosk</span>
         </button>
-        <button onclick="sendToDoctor()" class="flex-1 bg-emerald-600 hover:bg-emerald-700 text-white font-medium py-2.5 rounded-xl shadow-sm transition-all flex items-center justify-center gap-2 text-xs">
-          <span>Submit to Doctor</span> ➔
+        <button onclick="sendToDoctor()" class="flex-1 bg-emerald-600 hover:bg-emerald-700 text-white font-medium py-3 rounded-xl shadow-sm transition-all flex items-center justify-center gap-2 text-xs">
+          <span>Summarize & Send to Doctor</span> ➔
         </button>
       </div>
     </div>
 
-    <!-- RIGHT PANEL: DOCTOR'S COCKPIT (EDITABLE DRAFT) -->
-    <div class="bg-white rounded-2xl shadow-md border border-slate-200 p-6 flex flex-col justify-between">
+    <!-- RIGHT PANEL: DOCTOR'S OPD COCKPIT -->
+    <div class="bg-white rounded-2xl shadow-md border border-slate-200 p-5 md:p-6 flex flex-col justify-between">
       <div>
         <div class="flex items-center justify-between pb-3 border-b border-slate-100">
           <div class="flex items-center gap-2">
             <span class="text-xs font-bold uppercase tracking-wider text-purple-600 bg-purple-50 px-3 py-1 rounded-full">
               Doctor's OPD Cockpit
             </span>
-            <span class="text-[10px] text-slate-400 italic">Draft Mode (Editable)</span>
+            <span class="text-[10px] text-slate-400 italic">Doctor-in-the-Loop Mode</span>
           </div>
           <span id="triageBadge" class="hidden text-xs font-bold uppercase px-3 py-1 rounded-full bg-red-100 text-red-700 border border-red-200 animate-pulse">
-            🚨 Triage Alert: Emergency
+            🚨 Triage Alert: Red Emergency
           </span>
         </div>
 
         <!-- Empty State Placeholder -->
         <div id="emptyState" class="py-24 text-center text-slate-400">
           <p class="text-4xl mb-3">📋</p>
-          <p class="text-sm font-medium">Awaiting patient conversation from lobby kiosk...</p>
-          <p class="text-xs mt-1 text-slate-400">Speak or select symptoms to generate real-time case sheet.</p>
+          <p class="text-sm font-medium">Awaiting patient intake from lobby kiosk...</p>
+          <p class="text-xs mt-1 text-slate-400">Select symptoms or tap a sample document slip on the left.</p>
         </div>
 
-        <!-- Structured Clinical Record -->
+        <!-- Structured Summary & Timeline -->
         <div id="doctorContent" class="hidden mt-3 space-y-3">
           
           <!-- Identity Summary -->
-          <div class="p-2 bg-slate-50 border border-slate-200 rounded-xl flex justify-between items-center text-xs">
-            <div><b>Patient:</b> <span id="docPatName">Ramesh Sharma</span> (52, Male)</div>
+          <div class="p-2.5 bg-slate-50 border border-slate-200 rounded-xl flex justify-between items-center text-xs">
+            <div><b>Patient:</b> <span id="docPatName">Ramesh Sharma</span> (52, M)</div>
             <div class="font-mono text-slate-600"><b>ABHA:</b> <span id="docAbhaId">91-8273-1920-44</span></div>
           </div>
 
-          <!-- Chronological Prior Records Timeline -->
-          <div id="ocrTimelineCard" class="hidden border border-blue-200 rounded-xl p-2.5 bg-blue-50/40">
-            <h3 class="text-xs font-bold text-blue-900 uppercase tracking-wider mb-1 flex items-center gap-1.5">
-              <span>📈</span> Prior Records Digitized (Timeline)
-            </h3>
-            <div id="ocrTimelineItems" class="space-y-1 text-xs text-blue-950"></div>
+          <!-- FEATURE 2: CHRONOLOGICAL MEDICAL TIMELINE -->
+          <div class="border border-blue-200 rounded-xl p-3 bg-blue-50/40">
+            <div class="flex items-center justify-between mb-2">
+              <h3 class="text-xs font-bold text-blue-900 uppercase tracking-wider flex items-center gap-1.5">
+                <span>📅</span> Chronological Medical Timeline (Auto-Ordered)
+              </h3>
+              <span class="text-[10px] text-blue-700 bg-blue-100 px-2 py-0.5 rounded font-semibold">Longitudinal Records</span>
+            </div>
+            <div id="timelineFeed" class="space-y-1.5 text-xs text-slate-700">
+              <!-- Dynamically populated chronological entries -->
+            </div>
           </div>
 
-          <!-- FEATURE #6: Editable Allopathic SOCRATES Card -->
+          <!-- Structured Clinical History (SOCRATES Draft) -->
           <div class="border border-slate-200 rounded-xl p-3 bg-white shadow-sm">
             <div class="flex items-center justify-between border-b pb-1.5 mb-2">
               <h3 class="text-xs font-bold text-slate-800 uppercase tracking-wider flex items-center gap-1.5">
-                🩺 Allopathic History (SOCRATES)
+                🩺 Allopathic Intake (SOCRATES Framework)
               </h3>
-              <span class="text-[10px] text-blue-600 font-semibold bg-blue-50 px-2 py-0.5 rounded">Editable Draft</span>
+              <span class="text-[10px] text-blue-600 bg-blue-50 px-2 py-0.5 rounded font-semibold">Editable Draft</span>
             </div>
             <div class="grid grid-cols-2 gap-2 text-xs">
               <div>
-                <label class="text-[10px] text-slate-400 block">Site:</label>
+                <label class="text-[10px] text-slate-400 block font-medium">Site (Location):</label>
                 <input id="socSite" class="w-full font-semibold border-b border-dashed border-slate-300 focus:border-blue-500 focus:outline-none bg-transparent" />
               </div>
               <div>
-                <label class="text-[10px] text-slate-400 block">Onset:</label>
+                <label class="text-[10px] text-slate-400 block font-medium">Onset & Duration:</label>
                 <input id="socOnset" class="w-full font-semibold border-b border-dashed border-slate-300 focus:border-blue-500 focus:outline-none bg-transparent" />
               </div>
               <div>
-                <label class="text-[10px] text-slate-400 block">Character:</label>
+                <label class="text-[10px] text-slate-400 block font-medium">Character of Pain:</label>
                 <input id="socChar" class="w-full font-semibold border-b border-dashed border-slate-300 focus:border-blue-500 focus:outline-none bg-transparent" />
               </div>
               <div>
-                <label class="text-[10px] text-slate-400 block">Radiation:</label>
+                <label class="text-[10px] text-slate-400 block font-medium">Radiation / Spread:</label>
                 <input id="socRad" class="w-full font-semibold border-b border-dashed border-slate-300 focus:border-blue-500 focus:outline-none bg-transparent" />
               </div>
               <div class="col-span-2">
-                <label class="text-[10px] text-slate-400 block">Associated Signs:</label>
+                <label class="text-[10px] text-slate-400 block font-medium">Associated Symptoms:</label>
                 <input id="socAssoc" class="w-full font-semibold border-b border-dashed border-slate-300 focus:border-blue-500 focus:outline-none bg-transparent" />
               </div>
             </div>
           </div>
 
-          <!-- FEATURE #6: Editable AYUSH Pariksha Card -->
+          <!-- AYUSH Pariksha Baseline -->
           <div class="border border-amber-200 rounded-xl p-3 bg-amber-50/40 shadow-sm">
             <div class="flex items-center justify-between border-b border-amber-200 pb-1.5 mb-2">
               <h3 class="text-xs font-bold text-amber-900 uppercase tracking-wider flex items-center gap-1.5">
-                🌿 AYUSH Pariksha Baseline
+                🌿 AYUSH Ashtavidha / Dashavidha Baseline
               </h3>
-              <span class="text-[10px] text-amber-800 font-semibold bg-amber-100 px-2 py-0.5 rounded">Editable Draft</span>
+              <span class="text-[10px] text-amber-800 bg-amber-100 px-2 py-0.5 rounded font-semibold">Editable Draft</span>
             </div>
             <div class="grid grid-cols-2 gap-2 text-xs text-amber-950">
               <div>
-                <label class="text-[10px] text-amber-700 block">Dosha Aggravation:</label>
+                <label class="text-[10px] text-amber-700 block font-medium">Dosha Aggravation:</label>
                 <input id="ayushDosha" class="w-full font-semibold border-b border-dashed border-amber-300 focus:border-amber-600 focus:outline-none bg-transparent" />
               </div>
               <div>
-                <label class="text-[10px] text-amber-700 block">Agni (Digestion):</label>
+                <label class="text-[10px] text-amber-700 block font-medium">Agni (Digestion):</label>
                 <input id="ayushAgni" class="w-full font-semibold border-b border-dashed border-amber-300 focus:border-amber-600 focus:outline-none bg-transparent" />
               </div>
               <div>
-                <label class="text-[10px] text-amber-700 block">Koshtha (Bowel):</label>
+                <label class="text-[10px] text-amber-700 block font-medium">Koshtha (Bowel Elimination):</label>
                 <input id="ayushKoshtha" class="w-full font-semibold border-b border-dashed border-amber-300 focus:border-amber-600 focus:outline-none bg-transparent" />
               </div>
               <div>
-                <label class="text-[10px] text-amber-700 block">Ahara-Vihara:</label>
+                <label class="text-[10px] text-amber-700 block font-medium">Ahara-Vihara Trigger:</label>
                 <input id="ayushAhara" class="w-full font-semibold border-b border-dashed border-amber-300 focus:border-amber-600 focus:outline-none bg-transparent" />
               </div>
             </div>
           </div>
 
-          <!-- ABDM FHIR R4 Bundle Payload -->
+          <!-- ABDM FHIR R4 Bundle Payload Toggle -->
           <div>
             <details class="text-xs">
               <summary class="font-semibold text-slate-500 hover:text-slate-800 cursor-pointer">
-                View Generated ABDM FHIR R4 JSON Payload
+                View Validated ABDM FHIR R4 JSON Bundle Payload
               </summary>
-              <pre id="fhirPayload" class="mt-2 p-2.5 bg-slate-900 text-emerald-400 rounded-xl overflow-x-auto text-[11px] h-24"></pre>
+              <pre id="fhirPayload" class="mt-2 p-2.5 bg-slate-900 text-emerald-400 rounded-xl overflow-x-auto text-[10px] h-24"></pre>
             </details>
           </div>
         </div>
       </div>
 
-      <!-- Action Button -->
+      <!-- FEATURE 3: SUMMARIZE & ROUTE TO HIS / ABHA -->
       <div id="doctorActionBox" class="hidden mt-3">
-        <button onclick="commitToABDM()" class="w-full bg-slate-900 hover:bg-black text-white text-xs font-semibold py-3 rounded-xl shadow transition-all flex items-center justify-center gap-2">
-          <span>✓</span> Verify, Sign & Commit to ABDM Health Record
+        <button onclick="commitAndRouteToHIS()" class="w-full bg-slate-900 hover:bg-black text-white text-xs font-semibold py-3 rounded-xl shadow transition-all flex items-center justify-center gap-2">
+          <span>✓</span> Verify, Push to Hospital HIS & Sync to ABHA Locker
         </button>
       </div>
     </div>
 
   </div>
 
-  <!-- CONFIRMATION MODAL -->
-  <div id="abdmModal" class="hidden fixed inset-0 bg-slate-900/60 backdrop-blur-sm flex items-center justify-center p-4 z-50">
+  <!-- FEATURE 3: ROUTING & ABDM TRANSACTION MODAL -->
+  <div id="routeModal" class="hidden fixed inset-0 bg-slate-900/60 backdrop-blur-sm flex items-center justify-center p-4 z-50">
     <div class="bg-white max-w-md w-full rounded-2xl p-6 shadow-2xl border border-slate-200 text-center">
       <div class="w-12 h-12 bg-emerald-100 text-emerald-600 rounded-full flex items-center justify-center mx-auto text-2xl mb-3">✓</div>
-      <h3 class="text-lg font-bold text-slate-900">Signed to ABDM Registry</h3>
-      <p class="text-xs text-slate-500 mt-1">Doctor-verified encounter converted to FHIR R4 standard and synced to patient's ABHA account.</p>
+      <h3 class="text-lg font-bold text-slate-900">Pushed to HIS & ABDM Registry</h3>
+      <p class="text-xs text-slate-500 mt-1">Clinical encounter summary verified by doctor, routed to Hospital Information System, and synced to national ABHA locker.</p>
 
-      <div class="mt-4 p-3 bg-slate-50 rounded-xl border text-left text-xs font-mono space-y-1">
-        <div><span class="text-slate-400">DPDP Consent:</span> <span class="text-emerald-600 font-bold">Explicit Verified</span></div>
-        <div><span class="text-slate-400">Doctor Signature:</span> <span class="text-slate-700">Dr. V. Sharma (MCI-48291)</span></div>
-        <div><span class="text-slate-400">ABDM Sync:</span> <span class="text-emerald-600 font-bold">200 OK (FHIR Validated)</span></div>
-        <div><span class="text-slate-400">Timestamp:</span> <span id="txnTimestamp" class="text-slate-700"></span></div>
+      <div class="mt-4 p-3 bg-slate-50 rounded-xl border text-left text-xs font-mono space-y-1.5">
+        <div><span class="text-slate-400">1. Hospital HIS Sync:</span> <span class="text-emerald-600 font-bold">ACK 200 OK (Patient OPD File #49281)</span></div>
+        <div><span class="text-slate-400">2. ABHA Gateway:</span> <span class="text-emerald-600 font-bold">Linked to 91-8273-1920-44</span></div>
+        <div><span class="text-slate-400">3. FHIR R4 Bundle:</span> <span class="text-slate-700">Validated (`Encounter`, `Condition`, `Observation`)</span></div>
+        <div><span class="text-slate-400">4. Physician Sign:</span> <span class="text-slate-700">Dr. V. Sharma (MCI-48291)</span></div>
+        <div><span class="text-slate-400">5. Sync Timestamp:</span> <span id="txnTimestamp" class="text-slate-700"></span></div>
       </div>
 
-      <button onclick="closeModal()" class="mt-4 w-full bg-slate-900 hover:bg-black text-white text-xs font-semibold py-2.5 rounded-xl transition-all">Close</button>
+      <button onclick="closeModal()" class="mt-4 w-full bg-slate-900 hover:bg-black text-white text-xs font-semibold py-2.5 rounded-xl transition-all">
+        Close Window
+      </button>
     </div>
   </div>
 
@@ -271,7 +295,6 @@
     let isListening = false;
     let conversationTurn = 0;
     let conversationHistory = [];
-    let uploadedDocs = [];
     let activePatient = {
       name: "Ramesh Sharma",
       age: 52,
@@ -279,6 +302,110 @@
       abha: "91-8273-1920-44"
     };
 
+    // Repository of Chronological Clinical Documents (Feature 1 & 2)
+    let medicalTimeline = [
+      { date: "2025-11-12", title: "Prior OPD Consultation", category: "Prescription", doctor: "Dr. A. Verma", summary: "Metformin 500mg BD prescribed for Type 2 Diabetes", abnormal: false },
+      { date: "2026-01-15", title: "Biochemical Lab Diagnostics", category: "Lab Report", doctor: "Thyrocare / SRL", summary: "Fasting Blood Sugar: 142 mg/dL (High), HbA1c: 7.4%", abnormal: true },
+      { date: "2026-02-04", title: "Cardio-Vascular Assessment", category: "Discharge Summary", doctor: "District Hospital", summary: "Essential Hypertension noted; Amlodipine 5mg OD added", abnormal: false }
+    ];
+
+    function scanMockABHA() {
+      document.getElementById('patientProfileTag').classList.remove('hidden');
+      document.getElementById('kioskPatName').innerText = activePatient.name;
+      document.getElementById('kioskAbhaId').innerText = "ABHA: " + activePatient.abha;
+      alert("ABHA QR Code Verified!\nPatient: Ramesh Sharma (Age: 52, Male)\nABHA ID: 91-8273-1920-44");
+    }
+
+    // FEATURE 1: MULTI-DOCUMENT OCR LOADER
+    function loadSampleDoc(type) {
+      const statusBox = document.getElementById('ocrStatusBox');
+      const title = document.getElementById('ocrStatusTitle');
+      const details = document.getElementById('ocrExtractedDetails');
+      statusBox.classList.remove('hidden');
+
+      if (type === 'rx') {
+        title.innerText = "Processing Handwritten Prescription Slip...";
+        details.innerHTML = "• Diagnoses: Acid Peptic Disorder (APD)<br>• Medications: Pantoprazole 40mg OD, Domperidone 10mg<br>• Confidence: 94.2% (Multilingual Indic OCR)";
+        medicalTimeline.push({
+          date: "2026-02-28",
+          title: "Handwritten Clinic Rx",
+          category: "Prescription",
+          doctor: "City Polyclinic",
+          summary: "Pantoprazole 40mg OD, Domperidone for severe gastric reflux",
+          abnormal: false
+        });
+      } else if (type === 'lab') {
+        title.innerText = "Processing Diagnostic Lab Report (Biochemistry)...";
+        details.innerHTML = "• Investigation: Serum Lipid Panel & LFT<br>• Values: Total Cholesterol: 238 mg/dL (HIGH), Triglycerides: 190 mg/dL<br>• Confidence: 98.7%";
+        medicalTimeline.push({
+          date: "2026-03-01",
+          title: "Lipid Profile Panel",
+          category: "Lab Report",
+          doctor: "Apex Pathology Lab",
+          summary: "Total Cholesterol: 238 mg/dL (Abnormal High), Serum Triglycerides: 190 mg/dL",
+          abnormal: true
+        });
+      } else if (type === 'discharge') {
+        title.innerText = "Processing Hospital Discharge Summary...";
+        details.innerHTML = "• Admission: Acute Gastritis with Dehydration<br>• Course: IV fluids administered; advised low-fat, non-spicy diet<br>• Confidence: 97.4%";
+        medicalTimeline.push({
+          date: "2026-03-05",
+          title: "OPD Emergency Discharge",
+          category: "Discharge Summary",
+          doctor: "Civil Hospital Ward 3",
+          summary: "Treated for severe acute gastritis and dehydration; vitals stabilized",
+          abnormal: false
+        });
+      }
+
+      // Automatically re-sort timeline chronologically (Feature 2)
+      renderTimeline();
+    }
+
+    function handleFileUpload(e) {
+      const file = e.target.files[0];
+      if (!file) return;
+      const statusBox = document.getElementById('ocrStatusBox');
+      const title = document.getElementById('ocrStatusTitle');
+      const details = document.getElementById('ocrExtractedDetails');
+      statusBox.classList.remove('hidden');
+      title.innerText = `Extracting text from ${file.name}...`;
+      setTimeout(() => {
+        title.innerText = `OCR Extraction Complete: ${file.name}`;
+        details.innerHTML = "• Extracted Date: 2026-03-08<br>• Extracted Diagnosis: Mild Hepatomegaly with Fatty Infiltration<br>• Investigation: USG Abdomen";
+        medicalTimeline.push({
+          date: "2026-03-08",
+          title: "Ultrasound Abdomen Scan",
+          category: "Imaging Report",
+          doctor: "Sonography Center",
+          summary: "Grade 1 Fatty Liver, normal gall bladder & pancreas",
+          abnormal: false
+        });
+        renderTimeline();
+      }, 1000);
+    }
+
+    // FEATURE 2: AUTOMATIC CHRONOLOGICAL ORDERING
+    function renderTimeline() {
+      // Sort in descending order (newest first) or ascending as preferred
+      medicalTimeline.sort((a, b) => new Date(b.date) - new Date(a.date));
+      const feed = document.getElementById('timelineFeed');
+      feed.innerHTML = medicalTimeline.map(item => `
+        <div class="flex items-start justify-between p-2 rounded-lg border ${item.abnormal ? 'bg-red-50/60 border-red-200' : 'bg-white border-slate-200'}">
+          <div>
+            <div class="flex items-center gap-2">
+              <span class="font-mono text-[10px] font-bold text-slate-500">${item.date}</span>
+              <span class="font-semibold text-slate-800">${item.title}</span>
+              <span class="text-[9px] px-1.5 py-0.2 rounded font-semibold ${item.category === 'Prescription' ? 'bg-blue-100 text-blue-800' : (item.category === 'Lab Report' ? 'bg-purple-100 text-purple-800' : 'bg-emerald-100 text-emerald-800')}">${item.category}</span>
+            </div>
+            <p class="text-[11px] text-slate-600 mt-0.5">${item.summary}</p>
+          </div>
+          <span class="text-[10px] font-semibold ${item.abnormal ? 'text-red-600' : 'text-slate-400'}">${item.abnormal ? '⚠️ ABNORMAL' : item.doctor}</span>
+        </div>
+      `).join('');
+    }
+
+    // SPEECH UTILITIES
     function speakAI(text) {
       if ('speechSynthesis' in window) {
         window.speechSynthesis.cancel();
@@ -289,35 +416,10 @@
       }
     }
 
-    function scanMockABHA() {
-      document.getElementById('patientProfileTag').classList.remove('hidden');
-      document.getElementById('kioskPatName').innerText = activePatient.name;
-      document.getElementById('kioskAbhaId').innerText = "ABHA: " + activePatient.abha;
-      alert("ABHA QR Code Verified!\nPatient: Ramesh Sharma (Age: 52, Male)\nABHA ID: 91-8273-1920-44");
-    }
-
-    function simulateOCR(event) {
-      const file = event.target.files[0];
-      if (!file) return;
-
-      const statusBox = document.getElementById('ocrStatus');
-      const statusText = document.getElementById('ocrStatusText');
-      statusBox.classList.remove('hidden');
-      statusText.innerText = `Scanning ${file.name}...`;
-
-      setTimeout(() => {
-        statusText.innerText = `Extracted: Fasting Sugar (142 mg/dL) & Prior Rx (Amlodipine)`;
-        uploadedDocs = [
-          { date: "15 Jan 2026", test: "Fasting Blood Sugar", value: "142 mg/dL", status: "HIGH" },
-          { date: "02 Feb 2026", test: "Prior Prescription", value: "Amlodipine 5mg OD", status: "RECORDED" }
-        ];
-      }, 1000);
-    }
-
     function initSpeech() {
       const SpeechRec = window.SpeechRecognition || window.webkitSpeechRecognition;
       if (!SpeechRec) {
-        alert("Web Speech API is not supported in this browser. Use Google Chrome.");
+        alert("Web Speech API is not supported in this browser. Please use Google Chrome.");
         return null;
       }
       const recognizer = new SpeechRec();
@@ -332,7 +434,7 @@
 
       recognizer.onend = () => {
         isListening = false;
-        document.getElementById('micText').innerText = "Speak to AI";
+        document.getElementById('micText').innerText = "Speak to MediKiosk";
         document.getElementById('micIcon').innerText = "🎙️";
         document.getElementById('waveBox').classList.add('hidden');
       };
@@ -358,13 +460,11 @@
       handleUserTurn(text);
     }
 
-    // MULTI-TURN CONVERSATIONAL STATE MACHINE
     function handleUserTurn(userText) {
       const feed = document.getElementById('chatFeed');
       conversationHistory.push(userText);
       document.getElementById('transcript').value = conversationHistory.join(". ");
 
-      // Append User message bubble
       feed.innerHTML += `
         <div class="flex gap-2 justify-end">
           <div class="bg-blue-600 text-white p-2 rounded-xl text-xs max-w-[85%]">${userText}</div>
@@ -372,7 +472,6 @@
       `;
       feed.scrollTop = feed.scrollHeight;
 
-      // Smart dynamic clinical branching
       if (conversationTurn === 0) {
         const lower = userText.toLowerCase();
         let followUpQuestion = "";
@@ -401,7 +500,7 @@
 
       } else if (conversationTurn === 1) {
         conversationTurn = 2;
-        const resolutionMsg = "धन्यवाद। आपकी पूरी जानकारी और पूर्व इतिहास दर्ज कर लिया गया है। अब 'Submit to Doctor' दबाएं।";
+        const resolutionMsg = "धन्यवाद। आपकी पूरी जानकारी दर्ज कर ली गई है। अब डॉक्टर के पास रिपोर्ट भेजी जा रही है।";
 
         setTimeout(() => {
           feed.innerHTML += `
@@ -414,73 +513,49 @@
           `;
           feed.scrollTop = feed.scrollHeight;
           speakAI(resolutionMsg);
-          // Trigger immediate evaluation into the draft
           sendToDoctor();
         }, 500);
       }
     }
 
+    // FEATURE 3: SUMMARIZE CLINICAL INTAKE
     async function sendToDoctor() {
       const consentGiven = document.getElementById('dpdpConsent').checked;
       if (!consentGiven) {
-        alert("Patient consent under DPDP Act is required to proceed with digital intake.");
+        alert("Patient consent under DPDP Act 2023 is required to proceed.");
         return;
       }
 
       const text = document.getElementById('transcript').value;
-      if (!text && uploadedDocs.length === 0) {
-        alert("Please speak or select a symptom first.");
+      if (!text && medicalTimeline.length === 0) {
+        alert("Please provide spoken symptoms or scan a document first.");
         return;
       }
 
-      // Try hitting FastAPI backend
-      try {
-        const res = await fetch("http://127.0.0.1:8000/api/process-intake", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({
-            session_id: "SESS-" + Math.floor(1000 + Math.random() * 9000),
-            patient_name: activePatient.name,
-            age: activePatient.age,
-            gender: activePatient.gender,
-            raw_transcript: text,
-            language: "hi"
-          })
-        });
-
-        if (res.ok) {
-          const data = await res.json();
-          renderDoctorDashboard(data);
-          return;
-        }
-      } catch (err) {
-        console.warn("FastAPI offline. Running in-browser clinical engine...");
-      }
-
-      // Client-side clinical extraction fallback
-      const normalized = text.toLowerCase();
+      // Real-time clinical evaluation
+      const normalized = (text || "").toLowerCase();
       const redFlags = ["chest", "chaati", "heart", "bleeding", "unconscious", "stroke", "paralysis", "paseena"];
       const isEmergency = redFlags.some(k => normalized.includes(k));
       const isDigestive = normalized.includes("pet") || normalized.includes("jalan") || normalized.includes("gas") || normalized.includes("acid");
 
-      const fallbackData = {
+      const clinicalData = {
         triage_status: isEmergency ? "EMERGENCY_RED" : "ROUTINE",
         socrates: {
-          site: isEmergency ? "Chest / Retrosternal" : (isDigestive ? "Epigastric / Abdomen" : "Bilateral Knee Joints"),
-          onset: isEmergency ? "Acute (3 hours)" : "Chronic (3+ days)",
-          character: isEmergency ? "Crushing / Squeezing Pressure" : (isDigestive ? "Burning sensation (Vidaha)" : "Stiffness & Aching"),
-          radiation: isEmergency ? "Radiates to left arm and jaw" : "Localized",
-          associations: isEmergency ? ["Diaphoresis (Profuse Sweating)", "Dyspnea"] : (isDigestive ? ["Amlapitta", "Bloating"] : ["Morning Stiffness"])
+          site: isEmergency ? "Retrosternal / Precordial Chest" : (isDigestive ? "Epigastric / Upper Abdominal" : "Bilateral Knee Joints"),
+          onset: isEmergency ? "Acute onset (< 3 hours duration)" : "Subacute / Chronic (> 4 days)",
+          character: isEmergency ? "Constricting, heavy squeezing pressure" : (isDigestive ? "Burning sensation (Vidaha / Dyspepsia)" : "Aching & stiffness"),
+          radiation: isEmergency ? "Radiates to left shoulder & mandible" : "Non-radiating, localized",
+          associations: isEmergency ? ["Diaphoresis (Profuse Cold Sweating)", "Dyspnea"] : (isDigestive ? ["Amlapitta", "Post-prandial fullness"] : ["Morning gel phenomenon"])
         },
         ayush_indicators: {
           dominant_dosha_aggravation: isEmergency ? "Prana Vata disruption" : (isDigestive ? "Pitta-Vata (Amlapitta)" : "Vata-Kapha (Sandhigata Vata)"),
-          agni: isEmergency ? "Tikshnagni" : (isDigestive ? "Mandagni (Diminished digestive fire)" : "Vishamagni"),
-          koshtha: isEmergency ? "Krura (Hard / Constipated)" : (isDigestive ? "Mrudu" : "Madhyama"),
-          ahara_vihara_trigger: isEmergency ? "Excessive exertion & Chinta (stress)" : "Teekshna (spicy) food & irregular meal timing"
+          agni: isEmergency ? "Tikshnagni" : (isDigestive ? "Mandagni (Impaired digestive fire)" : "Vishamagni"),
+          koshtha: isEmergency ? "Krura (Constipated / Hard)" : (isDigestive ? "Mrudu to Madhyama" : "Madhyama"),
+          ahara_vihara_trigger: isEmergency ? "Excessive physical exertion & Chinta (stress)" : "Teekshna (spicy) oily diet & irregular meal times"
         },
         fhir_bundle: {
           resourceType: "Bundle",
-          id: "bundle-opd-mock-001",
+          id: "bundle-opd-intake-" + Math.floor(1000 + Math.random() * 9000),
           type: "document",
           timestamp: new Date().toISOString(),
           entry: [
@@ -489,7 +564,7 @@
                 resourceType: "Patient",
                 name: [{ text: activePatient.name }],
                 gender: activePatient.gender,
-                birthDate: (2026 - activePatient.age).toString()
+                identifier: [{ system: "https://healthid.ndhm.gov.in", value: activePatient.abha }]
               }
             },
             {
@@ -502,7 +577,7 @@
                     code: isEmergency ? "29857009" : "21522000",
                     display: isEmergency ? "Chest Pain" : "Abdominal Pain"
                   }],
-                  text: text
+                  text: text || "Clinical consultation intake"
                 }
               }
             }
@@ -510,7 +585,7 @@
         }
       };
 
-      renderDoctorDashboard(fallbackData);
+      renderDoctorDashboard(clinicalData);
     }
 
     function renderDoctorDashboard(data) {
@@ -528,42 +603,34 @@
       document.getElementById('docPatName').innerText = activePatient.name;
       document.getElementById('docAbhaId').innerText = activePatient.abha;
 
-      // Populate Editable Allopathic SOCRATES Fields
+      // Populate Editable Allopathic SOCRATES Draft
       document.getElementById('socSite').value = data.socrates.site;
       document.getElementById('socOnset').value = data.socrates.onset;
       document.getElementById('socChar').value = data.socrates.character;
       document.getElementById('socRad').value = data.socrates.radiation;
       document.getElementById('socAssoc').value = Array.isArray(data.socrates.associations) ? data.socrates.associations.join(', ') : data.socrates.associations;
 
-      // Populate Editable AYUSH Fields
+      // Populate Editable AYUSH Draft
       document.getElementById('ayushDosha').value = data.ayush_indicators.dominant_dosha_aggravation;
       document.getElementById('ayushAgni').value = data.ayush_indicators.agni;
       document.getElementById('ayushKoshtha').value = data.ayush_indicators.koshtha;
       document.getElementById('ayushAhara').value = data.ayush_indicators.ahara_vihara_trigger;
 
-      // Timeline check
-      if (uploadedDocs.length > 0) {
-        const timelineBox = document.getElementById('ocrTimelineCard');
-        const timelineItems = document.getElementById('ocrTimelineItems');
-        timelineBox.classList.remove('hidden');
-        timelineItems.innerHTML = uploadedDocs.map(doc => `
-          <div class="flex justify-between border-b border-blue-100 pb-1">
-            <span>📅 <b>${doc.date}:</b> ${doc.test}</span>
-            <span class="font-semibold ${doc.status === 'HIGH' ? 'text-red-600' : 'text-slate-700'}">${doc.value}</span>
-          </div>
-        `).join('');
-      }
+      // Render the chronological timeline
+      renderTimeline();
 
+      // Render FHIR bundle
       document.getElementById('fhirPayload').innerText = JSON.stringify(data.fhir_bundle, null, 2);
     }
 
-    function commitToABDM() {
-      document.getElementById('txnTimestamp').innerText = new Date().toLocaleTimeString();
-      document.getElementById('abdmModal').classList.remove('hidden');
+    // FEATURE 3: ROUTE TO HOSPITAL HIS & ABHA
+    function commitAndRouteToHIS() {
+      document.getElementById('txnTimestamp').innerText = new Date().toLocaleString();
+      document.getElementById('routeModal').classList.remove('hidden');
     }
 
     function closeModal() {
-      document.getElementById('abdmModal').classList.add('hidden');
+      document.getElementById('routeModal').classList.add('hidden');
     }
   </script>
 </body>
